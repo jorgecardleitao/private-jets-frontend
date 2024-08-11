@@ -1,173 +1,134 @@
-import { render } from 'preact';
+import { Fragment, render } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
-
 
 import {
 	createColumnHelper,
-	flexRender,
-	getCoreRowModel,
-	getSortedRowModel,
-	Header,
-	useReactTable,
 } from '@tanstack/react-table'
 
-
-import Container from '@mui/material/Container';
+import { createTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import './theme';
+import { ThemeProvider } from '@emotion/react';
+import Toolbar from '@mui/material/Toolbar';
+import AppBar from '@mui/material/AppBar';
+import { Tab } from '@mui/icons-material';
+import FlightIcon from '@mui/icons-material/Flight';
+import Button from '@mui/material/Button';
 
-import CSV from './csv'
+import Home from './pages/home'
+import ModelTable from './table';
+import { AircraftModel, fetchAircraftModels } from './data/model'
+import { Aircraft, fetchAircrafts } from './data/aircraft'
+import { Aggregates } from './pages/aggregates';
 
-type Source = {
-	url: string
-	date: string
-}
-
-type AircraftModel = {
-	name: string
-	gph: number
-	sources: Source[]
-};
-
-type AircraftModels = AircraftModel[];
-
-function loadAircraftModel(content: string): AircraftModels {
-	//let url = "https://private-jets.fra1.digitaloceanspaces.com/model/db/data.csv"
-	const data = CSV.parse(content);
-	console.assert(data[0].sort().toString() === ["model", "gph", "source", "date"].sort().toString());
-
-	const aggre: Map<string, [AircraftModel, number]> = data.slice(1).reduce(function (acc: Map<string, [AircraftModel, number]>, x: any[]) {
-		const model = x[0];
-		if (acc.has(model)) {
-			let entry = acc.get(model)
-			entry[0].gph += x[1]
-			entry[0].sources.push({
-				url: x[2],
-				date: x[3],
-			})
-			entry[1] += 1
-			acc.set(model, entry)
-		} else {
-			acc.set(model, [{
-				name: model,
-				gph: x[1],
-				sources: [{
-					url: x[2],
-					date: x[3],
-				}]
-			}, 1])
-		}
-
-		return acc;
-	}, new Map);
-
-	return Array.from(aggre
-		.entries()).map(([key, value]) => {
-			value[0].gph /= value[1];
-			return value[0]
+function AircraftModelTable({ models }: { models: AircraftModel[] }) {
+	const columnHelper = createColumnHelper<AircraftModel>()
+	const columns = [
+		columnHelper.accessor('model', {
+			header: () => 'Model',
+			cell: info => info.getValue(),
+		}),
+		columnHelper.accessor('gph', {
+			header: () => 'Consumption (gph)',
+			cell: info => Math.round(info.getValue() * 10) / 10,
+		}),
+		columnHelper.accessor('sources', {
+			header: () => 'Source',
+			cell: info => <a href={info.getValue()[0].url}>source ({info.getValue()[0].date})</a>,
 		})
+	]
+	return ModelTable<AircraftModel>(models, columns)
 }
 
-async function fetchAircraftModel(): Promise<AircraftModels> {
-	const url = "https://private-jets.fra1.digitaloceanspaces.com/model/db/data.csv";
-	return fetch(url, { mode: 'cors' }).then(response => response.text()).then(loadAircraftModel)
+function AircraftTable({ aircrafts }: { aircrafts: Aircraft[] }) {
+	const columnHelper = createColumnHelper<Aircraft>()
+	const columns = [
+		columnHelper.accessor('tail_number', {
+			header: () => 'Tail number',
+			cell: info => info.getValue(),
+		}),
+		columnHelper.accessor('model', {
+			header: () => 'Model',
+			cell: info => info.getValue(),
+		}),
+		columnHelper.accessor('country', {
+			header: () => 'Country of registration',
+			cell: info => info.getValue(),
+		}),
+		columnHelper.accessor('icao_number', {
+			header: () => 'ICAO number',
+			cell: info => <a href={`https://globe.adsbexchange.com/?icao=${info.getValue()}`}>{info.getValue()}</a >,
+		}),
+	]
+	return ModelTable<Aircraft>(aircrafts, columns)
 }
 
-const columnHelper = createColumnHelper<AircraftModel>()
-const columns = [
-	columnHelper.accessor('name', {
-		header: () => 'Model',
-		cell: info => info.getValue(),
-	}),
-	columnHelper.accessor('gph', {
-		header: () => 'Consumption (gph)',
-		cell: info => info.getValue(),
-	}),
-	columnHelper.accessor('sources', {
-		header: () => 'Sources',
-		cell: info => info.getValue()[0].url,
-	})
-]
+type Tab = "introduction" | "models" | "aircrafts" | "timeseries"
 
 export function App() {
-	const [data, setData] = useState<AircraftModels>([]);
+	const [tab, setTab] = useState<Tab>("timeseries");
+
+	const [models, setModels] = useState<AircraftModel[]>([]);
+	const [aircrafts, setAircrafts] = useState<Aircraft[]>([]);
 
 	useEffect(() => {
-		fetchAircraftModel().then(setData)
+		fetchAircraftModels().then(setModels)
+	}, [])
+	useEffect(() => {
+		fetchAircrafts().then(setAircrafts)
 	}, [])
 
-	const table = useReactTable({
-		data,
-		columns,
-		getCoreRowModel: getCoreRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-	})
+	const aircraftsFragment = () => <Fragment>
+		<Typography component="h2" color="primary" gutterBottom>
+			Private aircrafts
+		</Typography>
+		<AircraftTable aircrafts={aircrafts} />
+	</Fragment>;
 
-	const headerFragment = (header: Header<AircraftModel, unknown>) => {
-		console.log(header.column.getCanSort())
-		return <div
-			className={
-				header.column.getCanSort()
-					? 'cursor-pointer select-none'
-					: ''
-			}
-			onClick={header.column.getToggleSortingHandler()}
-			title={
-				header.column.getCanSort()
-					? header.column.getNextSortingOrder() === 'asc'
-						? 'Sort ascending'
-						: header.column.getNextSortingOrder() === 'desc'
-							? 'Sort descending'
-							: 'Clear sort'
-					: undefined
-			}
-		>
-			{flexRender(
-				header.column.columnDef.header,
-				header.getContext()
-			)}
-			{{
-				asc: ' 🔼',
-				desc: ' 🔽',
-			}[header.column.getIsSorted() as string] ?? null}
-		</div>
+	const modelsFragment = () => <Fragment>
+		<Typography component="h2" color="primary" gutterBottom>
+			Private aircraft models
+		</Typography>
+		<AircraftModelTable models={models} />
+	</Fragment>;
+
+	const pages = {
+		"introduction": () => <Home />,
+		"aircrafts": aircraftsFragment,
+		"models": modelsFragment,
+		"timeseries": () => <Aggregates />,
+	}
+	const names = {
+		"introduction": "Introduction",
+		"models": "Models",
+		"aircrafts": "Private aircrafts",
+		"timeseries": "Legs",
 	}
 
-	const tableFrag = <table>
-		<thead>
-			{table.getHeaderGroups().map(headerGroup => (
-				<tr key={headerGroup.id}>
-					{headerGroup.headers.map(header => (
-						<th key={header.id}>
-							{header.isPlaceholder ? null : headerFragment(header)}
-						</th>
-					))}
-				</tr>
-			))}
-		</thead>
-		<tbody>
-			{table.getRowModel().rows.map(row => (
-				<tr key={row.id}>
-					{row.getVisibleCells().map(cell => (
-						<td key={cell.id}>
-							{flexRender(cell.column.columnDef.cell, cell.getContext())}
-						</td>
-					))}
-				</tr>
-			))}
-		</tbody>
-	</table>;
+	const fragment = pages[tab]()
 
 	return (
-		<Container maxWidth="sm">
-			<Box sx={{ my: 4 }}>
-				<Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-					Material UI Preact example
-				</Typography>
-				{tableFrag}
+		<ThemeProvider theme={createTheme()}>
+			<Box>
+				<AppBar position='static'>
+					<Toolbar>
+						<FlightIcon />
+
+						{Object.entries(names).map(([page, title]) => (
+							<Button
+								key={page}
+								onClick={(_) => setTab(page as Tab)}
+								color="inherit"
+							>
+								{title}
+							</Button>
+						))}
+					</Toolbar>
+				</AppBar>
+				<Box sx={{ mt: 2, mx: 2 }}>{fragment}</Box>
+
 			</Box>
-		</Container>
+		</ThemeProvider >
 	);
 }
 
