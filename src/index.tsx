@@ -1,5 +1,5 @@
 import { Fragment, render } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 
 import {
 	createColumnHelper,
@@ -20,6 +20,8 @@ import ModelTable from './table';
 import { AircraftModel, fetchAircraftModels } from './data/model'
 import { Aircraft, fetchAircrafts } from './data/aircraft'
 import { Aggregates } from './pages/aggregates';
+import CssBaseline from '@mui/material/CssBaseline';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 function AircraftModelTable({ models }: { models: AircraftModel[] }) {
 	const columnHelper = createColumnHelper<AircraftModel>()
@@ -66,6 +68,18 @@ function AircraftTable({ aircrafts }: { aircrafts: Aircraft[] }) {
 type Tab = "introduction" | "models" | "aircrafts" | "timeseries"
 
 export function App() {
+	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+	const theme = useMemo(
+		() =>
+			createTheme({
+				palette: {
+					mode: prefersDarkMode ? 'dark' : 'light',
+				},
+			}),
+		[prefersDarkMode],
+	);
+
 	const [tab, setTab] = useState<Tab>("timeseries");
 
 	const [models, setModels] = useState<AircraftModel[]>([]);
@@ -108,7 +122,8 @@ export function App() {
 	const fragment = pages[tab]()
 
 	return (
-		<ThemeProvider theme={createTheme()}>
+		<ThemeProvider theme={theme}>
+			<CssBaseline enableColorScheme />
 			<Box>
 				<AppBar position='static'>
 					<Toolbar>
