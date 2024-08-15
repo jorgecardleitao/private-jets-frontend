@@ -18,6 +18,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import Home from './pages/home'
+import Methodology from './pages/methodology'
 import ModelTable from './table';
 import { AircraftModel, fetchAircraftModels } from './data/model'
 import { Aircraft, fetchAircrafts } from './data/aircraft'
@@ -74,6 +75,7 @@ const NAMES = {
 	"aircrafts": "Aircrafts",
 	"timeseries": "In time",
 	"compare": "By country and model",
+	"methodology": "Methodology",
 }
 
 export function App() {
@@ -121,6 +123,7 @@ export function App() {
 		"models": modelsFragment,
 		"timeseries": () => <Aggregates />,
 		"compare": () => <Compare />,
+		"methodology": () => <Methodology />,
 	}
 
 	const fragment = pages[tab]()
@@ -145,7 +148,6 @@ export function App() {
 					</Toolbar>
 				</AppBar>
 				<Box sx={{ mt: 2, mx: 2 }}>{fragment}</Box>
-
 			</Box>
 		</ThemeProvider >
 	);

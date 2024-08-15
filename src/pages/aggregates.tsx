@@ -7,7 +7,7 @@ import Switch from '@mui/material/Switch';
 
 import { useEffect, useState } from 'preact/hooks';
 
-import { Aggregate, fetchAggregates, Scale, quantities } from '../data/timeseries';
+import { CountryAggregate, fetchAggregates, Scale, quantities } from '../data/timeseries';
 import ModelTable from '../table';
 import Selector from '../selector';
 
@@ -72,7 +72,7 @@ export default function Aggregates() {
     const [is_table, setIsTable] = useState<boolean>(false);
     const [quantity, setQuantity] = useState<string>("co2_emitted");
     const [scale, setScale] = useState<Scale>("month");
-    const [aggregates, setAggregates] = useState<Aggregate[]>([]);
+    const [aggregates, setAggregates] = useState<CountryAggregate[]>([]);
 
     useEffect(() => {
         fetchAggregates("country", scale).then(setAggregates)
@@ -91,32 +91,24 @@ export default function Aggregates() {
 }
 
 interface ChartsProps {
-    aggregates: Aggregate[]
+    aggregates: CountryAggregate[]
     scale: string
     quantity: string
 }
 
 function AggregateTable(props: ChartsProps) {
-    const columnHelper = createColumnHelper<Aggregate>()
+    const columnHelper = createColumnHelper<CountryAggregate>()
     const columns = [
         columnHelper.accessor('date', {
             header: () => scales[props.scale],
             cell: info => formatValue[props.scale](info.getValue()),
         }),
-        columnHelper.accessor('number_of_legs', {
-            header: () => 'Number of legs',
-            cell: info => format(info.getValue()),
-        }),
-        columnHelper.accessor('time_flown', {
-            header: () => 'Total flown time (hours)',
-            cell: info => format(info.getValue()),
-        }),
-        columnHelper.accessor('co2_emitted', {
-            header: () => 'CO2 emissions (kg CO2)',
-            cell: info => format(info.getValue()),
-        }),
+        ...Object.entries(quantities).map(([key, name]) => columnHelper.accessor(key, {
+            header: () => name,
+            cell: info => format(info.getValue() as number),
+        }))
     ]
-    return ModelTable<Aggregate>(props.aggregates, columns)
+    return ModelTable<CountryAggregate>(props.aggregates, columns)
 }
 
 function Chart(props: ChartsProps) {

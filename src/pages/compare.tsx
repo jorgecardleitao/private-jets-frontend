@@ -7,60 +7,54 @@ import { BarPlot } from '@mui/x-charts/BarChart';
 
 import { useEffect, useState } from 'preact/hooks';
 
-import { Aggregate, fetchAggregates, quantities, Dimension } from '../data/timeseries';
+import { ModelAggregate, CountryAggregate, fetchAggregates, quantities, Dimension } from '../data/timeseries';
 import ModelTable from '../table';
 import { format } from './aggregates';
 import Selector from '../selector';
 import { createColumnHelper } from '@tanstack/react-table';
 
+const dimensions = { "country": "Country of registration", "model": "Aircraft Model" }
+
 export default function Compare() {
     const [is_table, setIsTable] = useState<boolean>(false);
     const [dimension, setDimension] = useState<Dimension>("country");
     const [quantity, setQuantity] = useState<string>("co2_emitted");
-    const [aggregates, setAggregates] = useState<Aggregate[]>([]);
+    const [aggregates, setAggregates] = useState<ModelAggregate[] | CountryAggregate[]>([]);
 
     useEffect(() => {
         fetchAggregates(dimension, "year").then(setAggregates)
     }, [dimension])
 
-    let dataset = aggregates.filter(v => v.date.slice(0, 4) == "2023");
+    let dataset = aggregates.filter(v => v.date.slice(0, 4) == "2023").filter(v => v[dimension] != "World");
     dataset.sort((v1, v2) => -(v1[quantity] - v2[quantity]));
 
     return <Box>
         <FormControlLabel control={<Switch onChange={(_, value) => setIsTable(value)} />} label="Table" />
-        <Selector values={{ "country": "Country", "model": "Aircraft Model" }} value={dimension} onChange={setDimension} label="What" />
+        <Selector values={dimensions} value={dimension} onChange={setDimension} label="What" />
         {!is_table ? <Selector values={quantities} value={quantity} onChange={setQuantity} label="Quantity" /> : null}
         {is_table ? <AggregateTable dataset={dataset} quantity={quantity} dimension={dimension} /> : <Chart dataset={dataset.slice(0, 30)} quantity={quantity} dimension={dimension} />}
     </Box>
 }
 
 interface ChartsProps {
-    dataset: Aggregate[]
+    dataset: ModelAggregate[] | CountryAggregate[]
     quantity: string
     dimension: Dimension
 }
 
 function AggregateTable(props: ChartsProps) {
-    const columnHelper = createColumnHelper<Aggregate>()
+    const columnHelper = createColumnHelper<ModelAggregate | CountryAggregate>()
     const columns = [
         columnHelper.accessor(props.dimension, {
-            header: () => "Country",
+            header: () => dimensions[props.dimension],
             cell: info => info.getValue(),
         }),
-        columnHelper.accessor('number_of_legs', {
-            header: () => 'Number of legs',
-            cell: info => format(info.getValue()),
-        }),
-        columnHelper.accessor('time_flown', {
-            header: () => 'Total flown time (hours)',
-            cell: info => format(info.getValue()),
-        }),
-        columnHelper.accessor('co2_emitted', {
-            header: () => 'CO2 emissions (kg CO2)',
-            cell: info => format(info.getValue()),
-        }),
+        ...Object.entries(quantities).map(([key, name]) => columnHelper.accessor(key, {
+            header: () => name,
+            cell: info => format(info.getValue() as number),
+        }))
     ]
-    return ModelTable<Aggregate>(props.dataset, columns)
+    return ModelTable<ModelAggregate | CountryAggregate>(props.dataset, columns)
 }
 
 function Chart(props: ChartsProps) {
