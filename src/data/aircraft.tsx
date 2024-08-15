@@ -13,6 +13,6 @@ function loadAircrafts(content: string): Aircraft[] {
 }
 
 export async function fetchAircrafts(): Promise<Aircraft[]> {
-    const url = "https://private-jets.fra1.digitaloceanspaces.com/private_jets/all.csv";
+    const url = "https://private-jets.fra1.digitaloceanspaces.com/private_aircraft/v1/month=2024-07/data.csv";
     return fetch(url, { mode: 'cors' }).then(response => response.text()).then(loadAircrafts)
 }

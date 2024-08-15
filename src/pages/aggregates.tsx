@@ -53,25 +53,25 @@ const quantities: Quantities = {
 }
 
 const scales: Quantities = {
-    "by_year": "Years",
-    "by_month": "Months",
-    "by_day": "Days",
+    "by_country_year": "Years",
+    "by_country_month": "Months",
+    "by_country_day": "Days",
 }
 
 const formatValue = {
-    "by_year": value => value.slice(0, -6),
-    "by_month": value => value.slice(0, -3),
-    "by_day": value => value,
+    "by_country_year": value => value.slice(0, -6),
+    "by_country_month": value => value.slice(0, -3),
+    "by_country_day": value => value,
 }
 
 const xAxis = {
-    "by_year": {
+    "by_country_year": {
         valueFormatter: (value, _) => value.slice(0, -6)
     },
-    "by_month": {
+    "by_country_month": {
         valueFormatter: (value, _) => value.slice(0, -3)
     },
-    "by_day": {
+    "by_country_day": {
         tickLabelInterval: (_, index) => index % 30 === 0,
         tickInterval: (_, index) => index % 10 === 0,
     },
@@ -83,20 +83,24 @@ function format(value: number): string {
 }
 
 export function Aggregates() {
+    const [country, setCountry] = useState<string>("World");
     const [is_table, setIsTable] = useState<boolean>(false);
     const [quantity, setQuantity] = useState<string>("co2_emitted");
-    const [scale, setScale] = useState<Scale>("by_day");
+    const [scale, setScale] = useState<Scale>("by_country_month");
     const [aggregates, setAggregates] = useState<Aggregate[]>([]);
 
     useEffect(() => {
         fetchAggregates(scale).then(setAggregates)
     }, [scale])
 
+    const countries = Object.fromEntries(aggregates.length > 0 ? aggregates.map(v => [v.country, v.country]) : [["World", "World"]])
+
     return <Box>
         <FormControlLabel control={<Switch onChange={(_, value) => setIsTable(value)} />} label="Table" />
         {!is_table ? <Selector values={quantities} value={quantity} onChange={setQuantity} label="Quantity" /> : null}
+        <Selector values={countries} value={country} onChange={setCountry} label="Country of registration" />
         <Selector values={scales} value={scale} onChange={setScale} label="Time scale" />
-        {is_table ? <AggregateTable aggregates={aggregates} scale={scale} quantity={quantity} /> : <Chart aggregates={aggregates} scale={scale} quantity={quantity} />}
+        {is_table ? <AggregateTable aggregates={aggregates.filter(v => v.country == country)} scale={scale} quantity={quantity} /> : <Chart aggregates={aggregates.filter(v => v.country == country)} scale={scale} quantity={quantity} />}
     </Box>
 }
 
