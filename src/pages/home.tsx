@@ -1,9 +1,10 @@
 import Markdown from 'preact-markdown';
 
 import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'preact/hooks';
 
 const text = `
-## Private aircrafts
+# Private aircrafts
 
 This website summarizes private aviation worldwide. You can find:
 
@@ -13,7 +14,16 @@ This website summarizes private aviation worldwide. You can find:
 `
 
 export default function Home() {
+    const [methodology, setMethodology] = useState<string>("");
+    useEffect(() => {
+        fetch("https://raw.githubusercontent.com/jorgecardleitao/private-jets/main/methodology.md").then(v => v.text()).then(setMethodology)
+    }, [])
+
+    // https://raw.githubusercontent.com/jorgecardleitao/private-jets/main/src/country.rs
+    const bla = methodology.replace(/\.\//g, "https://raw.githubusercontent.com/jorgecardleitao/private-jets/main/")
+
     return <Typography>
         <Markdown markdown={text} />
+        <Markdown markdown={bla} />
     </Typography>
 }

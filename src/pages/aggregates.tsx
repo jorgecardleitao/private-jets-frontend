@@ -1,18 +1,15 @@
 import { ChartsAxisHighlight, ChartsGrid, ChartsTextStyle, ChartsTooltip, ChartsXAxis, ChartsYAxis, LineHighlightPlot, LinePlot, ResponsiveChartContainer, axisClasses } from '@mui/x-charts';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-
-import { useEffect, useState } from 'preact/hooks';
-
-import { Aggregate, fetchAggregates, Scale } from '../data/timeseries';
-import ModelTable from '../table';
 import { createColumnHelper } from '@tanstack/react-table';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+
+import { useEffect, useState } from 'preact/hooks';
+
+import { Aggregate, fetchAggregates, Scale, quantities } from '../data/timeseries';
+import ModelTable from '../table';
+import Selector from '../selector';
 
 const units = [
     { prefix: "", symbol: "", iecPrefix: "", iecSymbol: "" },
@@ -26,11 +23,7 @@ const units = [
     { prefix: "yotta", symbol: "Y", iecPrefix: "yobi", iecSymbol: "Yi" },
 ];
 
-/**
- * Outputs an object with amount and si and iec units.
- * @param {number} amount Number of bits or bytes
- */
-export function kilomega(amount: number) {
+function kilomega(amount: number) {
     const exp = amount === 0 ? 0 : Math.floor(Math.log(amount) / Math.log(1024));
     const factor = Math.pow(1024, exp);
 
@@ -40,67 +33,60 @@ export function kilomega(amount: number) {
     }
 }
 
+export function format(value: number): string {
+    const scaled = kilomega(value);
+    return `${scaled.amount.toFixed(1)} ${scaled.symbol}`
+}
+
 interface Quantities {
     [name: string]: string
 }
 
-const quantities: Quantities = {
-    "time_flown": "Time flown (hours)",
-    "co2_emitted": "Emissions (kg CO2)",
-    "number_of_aircrafts": "Number of aircrafts",
-    "number_of_legs": "Number of legs",
-    "km_travelled": "Distance travelled (km)",
-}
-
 const scales: Quantities = {
-    "by_country_year": "Years",
-    "by_country_month": "Months",
-    "by_country_day": "Days",
+    "year": "Years",
+    "month": "Months",
+    "day": "Days",
 }
 
 const formatValue = {
-    "by_country_year": value => value.slice(0, -6),
-    "by_country_month": value => value.slice(0, -3),
-    "by_country_day": value => value,
+    "year": value => value.slice(0, -6),
+    "month": value => value.slice(0, -3),
+    "day": value => value,
 }
 
 const xAxis = {
-    "by_country_year": {
+    "year": {
         valueFormatter: (value, _) => value.slice(0, -6)
     },
-    "by_country_month": {
+    "month": {
         valueFormatter: (value, _) => value.slice(0, -3)
     },
-    "by_country_day": {
+    "day": {
         tickLabelInterval: (_, index) => index % 30 === 0,
         tickInterval: (_, index) => index % 10 === 0,
     },
 }
 
-function format(value: number): string {
-    const scaled = kilomega(value);
-    return `${scaled.amount.toFixed(1)} ${scaled.symbol}`
-}
-
-export function Aggregates() {
+export default function Aggregates() {
     const [country, setCountry] = useState<string>("World");
     const [is_table, setIsTable] = useState<boolean>(false);
     const [quantity, setQuantity] = useState<string>("co2_emitted");
-    const [scale, setScale] = useState<Scale>("by_country_month");
+    const [scale, setScale] = useState<Scale>("month");
     const [aggregates, setAggregates] = useState<Aggregate[]>([]);
 
     useEffect(() => {
-        fetchAggregates(scale).then(setAggregates)
+        fetchAggregates("country", scale).then(setAggregates)
     }, [scale])
 
     const countries = Object.fromEntries(aggregates.length > 0 ? aggregates.map(v => [v.country, v.country]) : [["World", "World"]])
+    const dataset = aggregates.filter(v => v.country == country)
 
     return <Box>
         <FormControlLabel control={<Switch onChange={(_, value) => setIsTable(value)} />} label="Table" />
         {!is_table ? <Selector values={quantities} value={quantity} onChange={setQuantity} label="Quantity" /> : null}
         <Selector values={countries} value={country} onChange={setCountry} label="Country of registration" />
         <Selector values={scales} value={scale} onChange={setScale} label="Time scale" />
-        {is_table ? <AggregateTable aggregates={aggregates.filter(v => v.country == country)} scale={scale} quantity={quantity} /> : <Chart aggregates={aggregates.filter(v => v.country == country)} scale={scale} quantity={quantity} />}
+        {is_table ? <AggregateTable aggregates={dataset} scale={scale} quantity={quantity} /> : <Chart aggregates={dataset} scale={scale} quantity={quantity} />}
     </Box>
 }
 
@@ -162,7 +148,7 @@ function Chart(props: ChartsProps) {
                 curve: "linear",
                 dataKey: props.quantity,
                 showMark: false,
-                color: theme.palette.primary.light,
+                color: theme.palette.primary.main,
             },
         ]}
         sx={{
@@ -182,31 +168,4 @@ function Chart(props: ChartsProps) {
         <LineHighlightPlot />
         <ChartsAxisHighlight x="line" />
     </ResponsiveChartContainer>
-}
-
-interface SelectorProps {
-    values: Quantities
-    value: string
-    onChange: (arg0: any) => void
-    label: string
-}
-
-function Selector(props: SelectorProps) {
-    return <FormControl sx={{ m: 1, minWidth: 80 }}>
-        <InputLabel id={`${props.label}-label`}>{props.label}</InputLabel>
-        <Select
-            labelId={`${props.label}-label`}
-            id={props.label}
-            value={props.value}
-            onChange={e => props.onChange((e.target as HTMLTextAreaElement).value)}
-            autoWidth
-            label="Option"
-        >
-            {
-                Object.entries(props.values).map(([k, v]) => {
-                    return <MenuItem value={k}>{v}</MenuItem>
-                })
-            }
-        </Select>
-    </FormControl>
 }

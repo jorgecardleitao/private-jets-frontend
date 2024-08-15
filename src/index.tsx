@@ -14,14 +14,15 @@ import AppBar from '@mui/material/AppBar';
 import { Tab } from '@mui/icons-material';
 import FlightIcon from '@mui/icons-material/Flight';
 import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import Home from './pages/home'
 import ModelTable from './table';
 import { AircraftModel, fetchAircraftModels } from './data/model'
 import { Aircraft, fetchAircrafts } from './data/aircraft'
-import { Aggregates } from './pages/aggregates';
-import CssBaseline from '@mui/material/CssBaseline';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import Aggregates from './pages/aggregates';
+import Compare from './pages/compare';
 
 function AircraftModelTable({ models }: { models: AircraftModel[] }) {
 	const columnHelper = createColumnHelper<AircraftModel>()
@@ -65,7 +66,15 @@ function AircraftTable({ aircrafts }: { aircrafts: Aircraft[] }) {
 	return ModelTable<Aircraft>(aircrafts, columns)
 }
 
-type Tab = "introduction" | "models" | "aircrafts" | "timeseries"
+type Tab = "introduction" | "models" | "aircrafts" | "timeseries" | "compare"
+
+const NAMES = {
+	"introduction": "Introduction",
+	"models": "Models",
+	"aircrafts": "Aircrafts",
+	"timeseries": "In time",
+	"compare": "By country and model",
+}
 
 export function App() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -111,12 +120,7 @@ export function App() {
 		"aircrafts": aircraftsFragment,
 		"models": modelsFragment,
 		"timeseries": () => <Aggregates />,
-	}
-	const names = {
-		"introduction": "Introduction",
-		"models": "Models",
-		"aircrafts": "Private aircrafts",
-		"timeseries": "Legs",
+		"compare": () => <Compare />,
 	}
 
 	const fragment = pages[tab]()
@@ -129,7 +133,7 @@ export function App() {
 					<Toolbar>
 						<FlightIcon />
 
-						{Object.entries(names).map(([page, title]) => (
+						{Object.entries(NAMES).map(([page, title]) => (
 							<Button
 								key={page}
 								onClick={(_) => setTab(page as Tab)}
