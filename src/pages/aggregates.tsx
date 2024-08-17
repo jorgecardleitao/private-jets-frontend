@@ -9,7 +9,7 @@ import { useEffect, useState } from 'preact/hooks';
 
 import { CountryAggregate, fetchAggregates, Scale, quantities } from '../data/timeseries';
 import ModelTable from '../table';
-import Selector from '../selector';
+import Selector from '../common/selector';
 
 const units = [
     { prefix: "", symbol: "", iecPrefix: "", iecSymbol: "" },

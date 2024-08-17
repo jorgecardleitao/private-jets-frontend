@@ -55,8 +55,8 @@ export async function fetchAggregates(dimension: Dimension, scale: Scale): Promi
 export const quantities: { [name in Quantity]: string } = {
     "time_flown": "Time flown (hours)",
     "co2_emitted": "Emissions (kg CO2)",
-    "number_of_aircrafts": "Number of aircrafts",
-    "number_of_legs": "Number of legs",
+    "number_of_aircrafts": "Registered aircrafts",
+    "number_of_legs": "Legs",
     "km_flown": "Distance flown (km)",
     "km_travelled": "Distance travelled (km)",
 }

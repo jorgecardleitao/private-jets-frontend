@@ -13,12 +13,11 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItem from "@mui/material/ListItem";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import Slider from "@mui/material/Slider";
-import InputLabel from "@mui/material/InputLabel";
 
 import { CountryAggregate, fetchAggregates, quantities } from "../data/timeseries";
 import { MouseTracker } from "../tooltip";
 import { format } from "./aggregates";
+import SliderSelect from "../common/sliderSelect";
 
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
@@ -113,34 +112,5 @@ const MapChart = () => {
     {target != null && <MouseTracker><Tip country={target[0]} aggregate={target[1]} /></MouseTracker>}
   </>;
 };
-
-interface SelectorProps {
-  values: Map<number, string>
-  value: number
-  onChange: (arg0: number) => void
-  label: string
-}
-
-function SliderSelect(props: SelectorProps) {
-  return <>
-    <InputLabel id={`${props.label}-label`}>{props.label}</InputLabel>
-    <Slider
-      aria-label={`${props.label}-label`}
-      defaultValue={0}
-      valueLabelDisplay="off"
-      step={1}
-      onChange={(_, v) => props.onChange(v as number)}
-      marks={Array.from(props.values.entries()).map(([k, v]) => {
-        return {
-          value: k,
-          label: v,
-        }
-      })}
-      track={false}
-      min={Math.min(...props.values.keys())}
-      max={Math.max(...props.values.keys())}
-    />
-  </>
-}
 
 export default MapChart;
