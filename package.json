@@ -14,7 +14,8 @@
 		"@mui/x-charts": "^7.12.1",
 		"@tanstack/react-table": "^8.20.1",
 		"preact": "^10.23.2",
-		"preact-markdown": "^2.1.0"
+		"preact-markdown": "^2.1.0",
+		"react-simple-maps": "^2.3.0"
 	},
 	"devDependencies": {
 		"@preact/preset-vite": "^2.9.0",

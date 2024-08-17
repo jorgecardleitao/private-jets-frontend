@@ -13,6 +13,8 @@ import Toolbar from '@mui/material/Toolbar';
 import AppBar from '@mui/material/AppBar';
 import { Tab } from '@mui/icons-material';
 import FlightIcon from '@mui/icons-material/Flight';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -24,6 +26,7 @@ import { AircraftModel, fetchAircraftModels } from './data/model'
 import { Aircraft, fetchAircrafts } from './data/aircraft'
 import Aggregates from './pages/aggregates';
 import Compare from './pages/compare';
+import IconButton from '@mui/material/IconButton';
 
 function AircraftModelTable({ models }: { models: AircraftModel[] }) {
 	const columnHelper = createColumnHelper<AircraftModel>()
@@ -81,17 +84,19 @@ const NAMES = {
 export function App() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
+	const [mode, setMode] = useState<'light' | 'dark'>(prefersDarkMode ? 'dark' : 'light');
+
 	const theme = useMemo(
 		() =>
 			createTheme({
 				palette: {
-					mode: prefersDarkMode ? 'dark' : 'light',
+					mode: mode,
 				},
 			}),
-		[prefersDarkMode],
+		[mode],
 	);
 
-	const [tab, setTab] = useState<Tab>("timeseries");
+	const [tab, setTab] = useState<Tab>("introduction");
 
 	const [models, setModels] = useState<AircraftModel[]>([]);
 	const [aircrafts, setAircrafts] = useState<Aircraft[]>([]);
@@ -145,6 +150,9 @@ export function App() {
 								{title}
 							</Button>
 						))}
+						<IconButton sx={{ ml: 1 }} onClick={() => setMode(theme.palette.mode == 'dark' ? 'light' : 'dark')} color="inherit">
+							{theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+						</IconButton>
 					</Toolbar>
 				</AppBar>
 				<Box sx={{ mt: 2, mx: 2 }}>{fragment}</Box>
