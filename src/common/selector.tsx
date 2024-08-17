@@ -3,12 +3,8 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-interface Quantities {
-    [name: string]: string
-}
-
 interface SelectorProps {
-    values: Quantities
+    values: { [name: string]: string }
     value: string
     onChange: (arg0: any) => void
     label: string

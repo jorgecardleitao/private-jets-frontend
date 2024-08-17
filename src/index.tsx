@@ -26,6 +26,7 @@ import { AircraftModel, fetchAircraftModels } from './data/model'
 import { Aircraft, fetchAircrafts } from './data/aircraft'
 import Aggregates from './pages/aggregates';
 import Compare from './pages/compare';
+import Positions from './pages/position';
 import IconButton from '@mui/material/IconButton';
 
 function AircraftModelTable({ models }: { models: AircraftModel[] }) {
@@ -78,6 +79,7 @@ const NAMES = {
 	"aircrafts": "Aircrafts",
 	"timeseries": "In time",
 	"compare": "By country and model",
+	"positions": "Geopositions",
 	"methodology": "Methodology",
 }
 
@@ -128,6 +130,7 @@ export function App() {
 		"models": modelsFragment,
 		"timeseries": () => <Aggregates />,
 		"compare": () => <Compare />,
+		"positions": () => <Positions aircrafts={aircrafts} />,
 		"methodology": () => <Methodology />,
 	}
 

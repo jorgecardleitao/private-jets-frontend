@@ -6,9 +6,11 @@ export interface SelectProps {
     value: number
     onChange: (arg0: number) => void
     label: string
+    marksEvery?: number
 }
 
 export default function SliderSelect(props: SelectProps) {
+    const every = props.marksEvery ?? 1;
     return <>
         <InputLabel id={`${props.label}-label`}>{props.label}</InputLabel>
         <Slider
@@ -17,7 +19,7 @@ export default function SliderSelect(props: SelectProps) {
             valueLabelDisplay="off"
             step={1}
             onChange={(_, v) => props.onChange(v as number)}
-            marks={Array.from(props.values.entries()).map(([k, v]) => {
+            marks={Array.from(props.values.entries()).filter((_, index) => index % every == 0).map(([k, v]) => {
                 return {
                     value: k,
                     label: v,

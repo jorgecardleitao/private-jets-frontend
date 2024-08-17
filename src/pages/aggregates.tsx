@@ -7,7 +7,7 @@ import Switch from '@mui/material/Switch';
 
 import { useEffect, useState } from 'preact/hooks';
 
-import { CountryAggregate, fetchAggregates, Scale, quantities } from '../data/timeseries';
+import { CountryAggregate, fetchAggregates, Scale, quantities, Quantity } from '../data/timeseries';
 import ModelTable from '../table';
 import Selector from '../common/selector';
 
@@ -70,7 +70,7 @@ const xAxis = {
 export default function Aggregates() {
     const [country, setCountry] = useState<string>("World");
     const [is_table, setIsTable] = useState<boolean>(false);
-    const [quantity, setQuantity] = useState<string>("co2_emitted");
+    const [quantity, setQuantity] = useState<Quantity>("co2_emitted");
     const [scale, setScale] = useState<Scale>("month");
     const [aggregates, setAggregates] = useState<CountryAggregate[]>([]);
 
@@ -92,8 +92,8 @@ export default function Aggregates() {
 
 interface ChartsProps {
     aggregates: CountryAggregate[]
-    scale: string
-    quantity: string
+    scale: Scale
+    quantity: Quantity
 }
 
 function AggregateTable(props: ChartsProps) {
@@ -103,7 +103,7 @@ function AggregateTable(props: ChartsProps) {
             header: () => scales[props.scale],
             cell: info => formatValue[props.scale](info.getValue()),
         }),
-        ...Object.entries(quantities).map(([key, name]) => columnHelper.accessor(key, {
+        ...Object.entries(quantities).map(([key, name]: [Quantity, string]) => columnHelper.accessor(key, {
             header: () => name,
             cell: info => format(info.getValue() as number),
         }))

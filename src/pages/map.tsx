@@ -19,7 +19,6 @@ import { MouseTracker } from "../tooltip";
 import { format } from "./aggregates";
 import SliderSelect from "../common/sliderSelect";
 
-
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
 
 const Tip = ({ country, aggregate }) => {
