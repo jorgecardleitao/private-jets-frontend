@@ -28,6 +28,7 @@ import Aggregates from './pages/aggregates';
 import Compare from './pages/compare';
 import Positions from './pages/position';
 import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 function AircraftModelTable({ models }: { models: AircraftModel[] }) {
 	const columnHelper = createColumnHelper<AircraftModel>()
@@ -81,6 +82,16 @@ const NAMES = {
 	"compare": "By country and model",
 	"positions": "Geopositions",
 	"methodology": "Methodology",
+}
+
+const DESCRIPTIONS = {
+	"introduction": "World map with main statistics per country",
+	"models": "All aircraft models used in private aviation",
+	"aircrafts": "List of all aicrafts whose model is used in private aviation",
+	"timeseries": "Evolution of private aviation in time",
+	"compare": "Metrics of private aviation by country and model",
+	"positions": "Position of the aircrafts in time",
+	"methodology": "Description of how the data was collected and analyzed",
 }
 
 export function App() {
@@ -145,13 +156,15 @@ export function App() {
 						<FlightIcon />
 
 						{Object.entries(NAMES).map(([page, title]) => (
-							<Button
-								key={page}
-								onClick={(_) => setTab(page as Tab)}
-								color="inherit"
-							>
-								{title}
-							</Button>
+							<Tooltip title={DESCRIPTIONS[page]}>
+								<Button
+									key={page}
+									onClick={(_) => setTab(page as Tab)}
+									color="inherit"
+								>
+									{title}
+								</Button>
+							</Tooltip>
 						))}
 						<IconButton sx={{ ml: 1 }} onClick={() => setMode(theme.palette.mode == 'dark' ? 'light' : 'dark')} color="inherit">
 							{theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
