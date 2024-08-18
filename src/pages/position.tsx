@@ -7,10 +7,8 @@ import {
   Line,
 } from "react-simple-maps";
 
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
 
 import { fetchPositions, Position } from "../data/position";
 import { Aircraft } from "../data/aircraft";
@@ -42,22 +40,18 @@ const PositionChart = ({ aircrafts }: { aircrafts: Aircraft[] }) => {
   const current = new Date();
   const currentYear = current.getUTCFullYear();
   const currentMonth = current.getUTCMonth();
-  const months = new Map([...Array((currentYear - 2019 - 1) * 12 + currentMonth + 1).keys()].map(v => [v, to_month(v)]));
-
-  const aircraftsMap = new Map(aircrafts.slice(0, 100).map(a => [a.icao_number, a]))
+  const months = new Map([...Array((currentYear - 2019 - 1) * 12 + currentMonth).keys()].map(v => [v, to_month(v)]));
 
   const [month, setMonth] = useState<number>(months[-1]);
-  const [aircraft, setAircraft] = useState<Aircraft>(aircraftsMap.get("a6382d"));
+  const [aircraft, setAircraft] = useState<Aircraft>(aircrafts.find(v => v.icao_number == "a6382d"));
   const [positions, setPositions] = useState<Position[]>([]);
-
-
 
   useEffect(() => {
     fetchPositions(aircraft.icao_number, months.get(month)).then(setPositions)
   }, [aircraft, month])
 
   return <>
-    <AicraftSelector values={aircraftsMap} value={aircraft} onChange={setAircraft} label="Aircraft" />
+    <AicraftSelector values={aircrafts} value={aircraft} onChange={setAircraft} label="Aircraft" />
     <SliderSelect values={months} value={month} onChange={setMonth} label="Month" marksEvery={6} />
     <ComposableMap height={500}>
       <Geographies geography={geoUrl} projectionConfig={{ scale: 1 }}>
@@ -86,28 +80,20 @@ const PositionChart = ({ aircrafts }: { aircrafts: Aircraft[] }) => {
 export default PositionChart;
 
 interface AicraftSelectorProps {
-  values: Map<string, Aircraft>
+  values: Aircraft[]
   value: Aircraft
-  onChange: (arg0: any) => void
+  onChange: (arg0: Aircraft) => void
   label: string
 }
 
 function AicraftSelector({ values, value, onChange, label }: AicraftSelectorProps) {
-  return <FormControl sx={{ m: 1, minWidth: 80 }}>
-    <InputLabel id={`${label}-label`}>{label}</InputLabel>
-    <Select
-      labelId={`${label}-label`}
-      id={label}
-      value={value.icao_number}
-      onChange={e => onChange(values.get((e.target as HTMLTextAreaElement).value))}
-      autoWidth
-      label="Option"
-    >
-      {
-        Array.from(Iterator.map(values.entries(), ([k, a]) => {
-          return <MenuItem value={k}>{a.tail_number}</MenuItem>
-        }))
-      }
-    </Select>
-  </FormControl>
+  return <Autocomplete
+    disablePortal
+    value={value}
+    onChange={(_, v) => onChange(v)}
+    options={values}
+    sx={{ width: 300 }}
+    getOptionLabel={a => a.tail_number}
+    renderInput={(params) => <TextField {...params} label={label} />}
+  />
 }
