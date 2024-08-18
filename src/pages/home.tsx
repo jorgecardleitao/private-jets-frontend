@@ -17,7 +17,7 @@ This website quantifies private aviation worldwide. Here you can find:
 
 export default function Home() {
     return <Box>
-        <Typography>
+        <Typography component="div">
             <Markdown markdown={text} />
         </Typography>
         <WorldMap />

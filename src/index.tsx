@@ -79,7 +79,7 @@ function AircraftTable({ aircrafts }: { aircrafts: Aircraft[] }) {
 	return ModelTable<Aircraft>(aircrafts, columns)
 }
 
-type Tab = "introduction" | "models" | "aircrafts" | "timeseries" | "compare"
+type Tab = "introduction" | "models" | "aircrafts" | "timeseries" | "compare" | "positions" | "methodology"
 
 const NAMES = {
 	"introduction": "Introduction",

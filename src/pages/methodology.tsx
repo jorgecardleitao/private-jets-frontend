@@ -11,7 +11,7 @@ export default function Home() {
 
     const markdown = methodology.replace(/\.\//g, "https://raw.githubusercontent.com/jorgecardleitao/private-jets/main/")
 
-    return <Typography>
+    return <Typography component="div">
         <Markdown markdown={"(you can find more information on [github](https://github.com/jorgecardleitao/private-jets))"} />
         <Markdown markdown={markdown} />
     </Typography>
