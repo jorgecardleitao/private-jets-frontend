@@ -1,0 +1,19 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+
+ <g>
+  <ellipse stroke-width="0" ry="91.07143" rx="91.07143" id="svg_43" cy="100" cx="100" stroke="#000" fill="#6baed6"/>
+  <ellipse stroke-width="2" ry="15.74467" rx="15.74467" id="svg_5" cy="102.57365" cx="98.39741" stroke="#000" fill="#cb181d"/>
+  <ellipse stroke-width="2" ry="9.3617" rx="9.3617" id="svg_8" cy="92.78643" cx="75.41871" stroke="#000" fill="#cb181d"/>
+  <ellipse stroke-width="2" ry="9.3617" rx="9.3617" id="svg_9" cy="92.78643" cx="121.37612" stroke="#000" fill="#cb181d"/>
+  <ellipse stroke-width="2" ry="2.13975" rx="2.13975" id="svg_10" cy="92.46174" cx="75.4187" stroke="#000" fill="none"/>
+  <ellipse stroke-width="2" ry="2.13975" rx="2.13975" id="svg_11" cy="92.46174" cx="121.3761" stroke="#000" fill="none"/>
+  <path id="svg_23" d="m97.11285,85.83926l1.28459,-20.71593l1.28459,20.71593l-2.56918,0z" stroke="#000" fill="#cb181d"/>
+  <line id="svg_25" y2="71.00028" x2="79.04046" y1="75.773" x1="97.44954" stroke="#000" fill="none"/>
+  <line id="svg_26" y2="75.77299" x2="99.33778" y1="71.00029" x1="117.51958" stroke="#000" fill="none"/>
+  <path transform="rotate(-90, 98.5905, 99.4696)" id="svg_29" d="m96.24203,89.01502l5.87121,0c-0.64852,0 -1.17424,4.68066 -1.17424,10.45455c0,5.77389 0.52573,10.45455 1.17424,10.45455l-5.87121,0l0,0c-0.64852,0 -1.17424,-4.68066 -1.17424,-10.45455c0,-5.77389 0.52573,-10.45455 1.17424,-10.45455z" stroke="#000" fill="#56aaff"/>
+  <line stroke-width="2" stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_4" y2="98.41919" x2="13.14769" y1="104.77315" x1="16.55194" stroke="#000" fill="none"/>
+  <path transform="rotate(90, 51.2141, 109.452)" stroke-width="2" id="svg_33" d="m48.03232,77.83901l-1.81818,67.19887l10,-71.17207l-8.18183,3.9732z" opacity="undefined" stroke="#000" fill="#cb181d"/>
+  <line stroke-width="2" stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_39" y2="98.41919" x2="186.85231" y1="104.77315" x1="183.29479" stroke="#000" fill="none"/>
+  <path stroke-width="2" id="svg_40" d="m114.0363,105.94578l70.22436,-1.81818l-74.37644,10l4.15208,-8.18183z" opacity="undefined" stroke="#000" fill="#cb181d"/>
+ </g>
+</svg>
