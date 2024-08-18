@@ -12,7 +12,6 @@ import { ThemeProvider } from '@emotion/react';
 import Toolbar from '@mui/material/Toolbar';
 import AppBar from '@mui/material/AppBar';
 import { Tab } from '@mui/icons-material';
-import FlightIcon from '@mui/icons-material/Flight';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -100,7 +99,6 @@ const DESCRIPTIONS = {
 	"positions": "Position of the aircrafts in time",
 	"methodology": "Description of how the data was collected and analyzed",
 }
-
 
 const drawerWidth = 240;
 

@@ -40,7 +40,7 @@ function loadAggregates(dimension: "model", content: string): ModelAggregate[]
 function loadAggregates(dimension: "country", content: string): CountryAggregate[]
 function loadAggregates(dimension: Dimension, content: string): ModelAggregate[] | CountryAggregate[]
 function loadAggregates(dimension: Dimension, content: string): ModelAggregate[] | CountryAggregate[] {
-    const generic = deserialize(content, [dimension, "date", ...Object.keys(quantities)]).map(x => {
+    const generic = deserialize(content, [dimension, "date", "number_of_aircrafts", "number_of_legs", "time_flown", "co2_emitted", "km_flown", "km_travelled"]).map(x => {
         Object.keys(quantities).forEach(quantity => {
             x[quantity] = parseFloat(x[quantity])
         });
@@ -58,10 +58,10 @@ export async function fetchAggregates(dimension: Dimension, scale: Scale): Promi
 }
 
 export const quantities: { [name in Quantity]: string } = {
-    "time_flown": "Time flown (hours)",
-    "co2_emitted": "Emissions (kg CO2)",
     "number_of_aircrafts": "Registered aircrafts",
     "number_of_legs": "Legs",
+    "time_flown": "Time flown (hours)",
+    "co2_emitted": "Emissions (kg CO2)",
     "km_flown": "Distance flown (km)",
     "km_travelled": "Distance travelled (km)",
 }
