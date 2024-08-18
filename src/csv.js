@@ -74,13 +74,6 @@ var CSV = {};
                 } else if (options.skipinitialspace === true) {
                     field = trim(field);
                 }
-
-                // Convert unquoted numbers to their appropriate types
-                if (rxIsInt.test(field)) {
-                    field = parseInt(field, 10);
-                } else if (rxIsFloat.test(field)) {
-                    field = parseFloat(field);
-                }
             }
             return field;
         };

@@ -19,7 +19,10 @@ interface RawAircraftModel {
 };
 
 function rawAircraftModelFromCSV(content: string): RawAircraftModel[] {
-    return deserialize(content, ["model", "gph", "source", "date"]).map(x => x as RawAircraftModel);
+    return deserialize(content, ["model", "gph", "source", "date"]).map(x => {
+        x["gph"] = parseInt(x["gph"])
+        return x
+    }).map(x => x as RawAircraftModel);
 }
 
 function loadAircraftModels(content: string): AircraftModel[] {

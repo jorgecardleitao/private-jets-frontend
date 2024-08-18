@@ -40,7 +40,12 @@ function loadAggregates(dimension: "model", content: string): ModelAggregate[]
 function loadAggregates(dimension: "country", content: string): CountryAggregate[]
 function loadAggregates(dimension: Dimension, content: string): ModelAggregate[] | CountryAggregate[]
 function loadAggregates(dimension: Dimension, content: string): ModelAggregate[] | CountryAggregate[] {
-    const generic = deserialize(content, [dimension, "date", "number_of_aircrafts", "number_of_legs", "time_flown", "co2_emitted", "km_flown", "km_travelled"])
+    const generic = deserialize(content, [dimension, "date", ...Object.keys(quantities)]).map(x => {
+        Object.keys(quantities).forEach(quantity => {
+            x[quantity] = parseFloat(x[quantity])
+        });
+        return x
+    })
     return dimension == "model" ? generic.map(x => x as ModelAggregate) : generic.map(x => x as CountryAggregate)
 }
 
