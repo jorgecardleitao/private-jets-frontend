@@ -15,6 +15,7 @@ import { Tab } from '@mui/icons-material';
 import FlightIcon from '@mui/icons-material/Flight';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import MenuIcon from '@mui/icons-material/Menu';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -29,6 +30,12 @@ import Compare from './pages/compare';
 import Positions from './pages/position';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Drawer from '@mui/material/Drawer';
 
 function AircraftModelTable({ models }: { models: AircraftModel[] }) {
 	const columnHelper = createColumnHelper<AircraftModel>()
@@ -94,10 +101,16 @@ const DESCRIPTIONS = {
 	"methodology": "Description of how the data was collected and analyzed",
 }
 
-export function App() {
+
+const drawerWidth = 240;
+
+export default function App() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+	const [mobileOpen, setMobileOpen] = useState(false);
 
 	const [mode, setMode] = useState<'light' | 'dark'>(prefersDarkMode ? 'dark' : 'light');
+
+	const [tab, setTab] = useState<Tab>("introduction");
 
 	const theme = useMemo(
 		() =>
@@ -109,8 +122,99 @@ export function App() {
 		[mode],
 	);
 
-	const [tab, setTab] = useState<Tab>("introduction");
+	const handleDrawerToggle = () => {
+		setMobileOpen(prevState => !prevState);
+	};
 
+	const drawer = (
+		<Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+			<Typography variant="h6" sx={{ my: 2 }}>
+				Private aircrafts
+			</Typography>
+			<Divider />
+			<List>
+				{Object.entries(NAMES).map(([page, title]) => (
+
+					<ListItem key={page} disablePadding>
+						<Tooltip title={DESCRIPTIONS[page]}>
+							<ListItemButton sx={{ textAlign: 'center' }} onClick={(_) => setTab(page as Tab)}>
+								<ListItemText primary={title} />
+							</ListItemButton>
+						</Tooltip>
+					</ListItem>
+
+				))}
+			</List>
+		</Box >
+	);
+
+	return (
+		<ThemeProvider theme={theme}>
+			<CssBaseline enableColorScheme />
+			<Box>
+				<AppBar component="nav">
+					<Toolbar>
+						<IconButton
+							color="inherit"
+							aria-label="open drawer"
+							edge="start"
+							onClick={handleDrawerToggle}
+							sx={{ mr: 2, display: { sm: 'none' } }}
+						>
+							<MenuIcon />
+						</IconButton>
+						<Typography
+							variant="h6"
+							component="div"
+							sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+						>
+							Private aircrafts
+						</Typography>
+						<Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+							{Object.entries(NAMES).map(([page, title]) => (
+								<Tooltip title={DESCRIPTIONS[page]}>
+									<Button
+										sx={{ ml: 1 }}
+										key={page}
+										onClick={(_) => setTab(page as Tab)}
+										color="inherit"
+									>
+										{title}
+									</Button>
+								</Tooltip>
+							))}
+						</Box>
+						<IconButton sx={{ ml: 1 }} onClick={() => setMode(theme.palette.mode == 'dark' ? 'light' : 'dark')} color="inherit">
+							{theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+						</IconButton>
+					</Toolbar>
+				</AppBar>
+				<nav>
+					<Drawer
+						variant="temporary"
+						open={mobileOpen}
+						onClose={handleDrawerToggle}
+						ModalProps={{
+							keepMounted: true, // Better open performance on mobile.
+						}}
+						sx={{
+							display: { xs: 'block', sm: 'none' },
+							'& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+						}}
+					>
+						{drawer}
+					</Drawer>
+				</nav>
+				<Box component="main" sx={{ p: 3 }}>
+					<Toolbar />
+					<Main tab={tab} />
+				</Box>
+			</Box>
+		</ThemeProvider>
+	);
+}
+
+export function Main({ tab }: { tab: Tab }) {
 	const [models, setModels] = useState<AircraftModel[]>([]);
 	const [aircrafts, setAircrafts] = useState<Aircraft[]>([]);
 
@@ -135,7 +239,7 @@ export function App() {
 		<AircraftModelTable models={models} />
 	</Fragment>;
 
-	const pages = {
+	return {
 		"introduction": () => <Home />,
 		"aircrafts": aircraftsFragment,
 		"models": modelsFragment,
@@ -143,38 +247,7 @@ export function App() {
 		"compare": () => <Compare />,
 		"positions": () => <Positions aircrafts={aircrafts} />,
 		"methodology": () => <Methodology />,
-	}
-
-	const fragment = pages[tab]()
-
-	return (
-		<ThemeProvider theme={theme}>
-			<CssBaseline enableColorScheme />
-			<Box>
-				<AppBar position='static'>
-					<Toolbar>
-						<FlightIcon />
-
-						{Object.entries(NAMES).map(([page, title]) => (
-							<Tooltip title={DESCRIPTIONS[page]}>
-								<Button
-									key={page}
-									onClick={(_) => setTab(page as Tab)}
-									color="inherit"
-								>
-									{title}
-								</Button>
-							</Tooltip>
-						))}
-						<IconButton sx={{ ml: 1 }} onClick={() => setMode(theme.palette.mode == 'dark' ? 'light' : 'dark')} color="inherit">
-							{theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-						</IconButton>
-					</Toolbar>
-				</AppBar>
-				<Box sx={{ mt: 2, mx: 2 }}>{fragment}</Box>
-			</Box>
-		</ThemeProvider >
-	);
+	}[tab]()
 }
 
 render(<App />, document.getElementById('app'));
