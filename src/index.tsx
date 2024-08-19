@@ -35,6 +35,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Drawer from '@mui/material/Drawer';
+import Footer from './footer';
 
 function AircraftModelTable({ models }: { models: AircraftModel[] }) {
 	const columnHelper = createColumnHelper<AircraftModel>()
@@ -207,6 +208,7 @@ export default function App() {
 					<Toolbar />
 					<Main tab={tab} />
 				</Box>
+				<Footer />
 			</Box>
 		</ThemeProvider>
 	);
