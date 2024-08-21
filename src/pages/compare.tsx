@@ -67,16 +67,16 @@ function Chart(props: ChartsProps) {
     const theme = useTheme();
 
     return <ResponsiveChartContainer
-        margin={{ top: 20, right: 20, bottom: 50, left: 210 }}
+        margin={{ top: 100, right: 30, bottom: 50, left: 210 }}
         height={2000}
         dataset={props.dataset}
         yAxis={[{ id: 'axis-id', scaleType: 'band', dataKey: props.dimension, tickLabelStyle: theme.typography.body2 as ChartsTextStyle, }]}
-        xAxis={[{ valueFormatter: format }]}
+        xAxis={[{ valueFormatter: format, label: quantities[props.quantity], tickLabelStyle: theme.typography.body2 as ChartsTextStyle }]}
         series={[{ layout: "horizontal", type: 'bar', dataKey: props.quantity, color: theme.palette.primary.main, valueFormatter: format }]}
     >
         <BarPlot />
         <ChartsYAxis axisId="axis-id" />
-        <ChartsXAxis />
+        <ChartsXAxis position={"top"} />
         <ChartsGrid vertical />
         <ChartsTooltip />
     </ResponsiveChartContainer>

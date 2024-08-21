@@ -61,10 +61,7 @@ const xAxis = {
     "month": {
         valueFormatter: (value, _) => value.slice(0, -3)
     },
-    "day": {
-        tickLabelInterval: (_, index) => index % 30 === 0,
-        tickInterval: (_, index) => index % 10 === 0,
-    },
+    "day": {},
 }
 
 export default function Aggregates() {
@@ -123,6 +120,8 @@ function Chart(props: ChartsProps) {
                 scaleType: 'point',
                 dataKey: "date",
                 tickLabelStyle: theme.typography.body2 as ChartsTextStyle,
+                tickLabelInterval: (value, _) => value.slice(-5) === "01-01",
+                tickInterval: (value, _) => value.slice(-5) === "01-01",
                 ...xAxis[props.scale]
             },
         ]}
