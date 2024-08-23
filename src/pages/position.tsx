@@ -5,6 +5,7 @@ import {
   Geographies,
   Geography,
   Line,
+  ZoomableGroup,
 } from "react-simple-maps";
 
 import Autocomplete from "@mui/material/Autocomplete";
@@ -40,7 +41,7 @@ const PositionChart = ({ aircrafts }: { aircrafts: Aircraft[] }) => {
   const current = new Date();
   const currentYear = current.getUTCFullYear();
   const currentMonth = current.getUTCMonth();
-  const months = new Map([...Array((currentYear - 2019 - 1) * 12 + currentMonth).keys()].map(v => [v, to_month(v)]));
+  const months = new Map([...Array((currentYear - 2019) * 12 + currentMonth).keys()].map(v => [v, to_month(v)]));
 
   const [month, setMonth] = useState<number>(months[-1]);
   const [aircraft, setAircraft] = useState<Aircraft>(aircrafts.find(v => v.icao_number == "a6382d"));
@@ -54,25 +55,27 @@ const PositionChart = ({ aircrafts }: { aircrafts: Aircraft[] }) => {
     <AicraftSelector values={aircrafts} value={aircraft} onChange={setAircraft} label="Aircraft" />
     <SliderSelect values={months} value={month} onChange={setMonth} label="Month" marksEvery={6} />
     <ComposableMap height={500}>
-      <Geographies geography={geoUrl} projectionConfig={{ scale: 1 }}>
-        {({ geographies }) =>
-          geographies.map((geo) => {
-            return <Geography
-              key={geo.rsmKey}
-              geography={geo}
-              id={geo.rsmKey}
-              fill="#2171b5"
-            />
-          })
-        }
-      </Geographies>
-      {Array.from(Iterator.map(window(positions.filter((_, index) => index % 10 == 0), 2), ([from, to]: [Position, Position]) => (
-        <Line
-          from={[from.longitude, from.latitude]}
-          to={[to.longitude, to.latitude]}
-          strokeWidth={0.5}
-          strokeLinecap="round" />
-      )))}
+      <ZoomableGroup>
+        <Geographies geography={geoUrl} projectionConfig={{ scale: 1 }}>
+          {({ geographies }) =>
+            geographies.map((geo) => {
+              return <Geography
+                key={geo.rsmKey}
+                geography={geo}
+                id={geo.rsmKey}
+                fill="#2171b5"
+              />
+            })
+          }
+        </Geographies>
+        {Array.from(Iterator.map(window(positions.filter((_, index) => index % 10 == 0), 2), ([from, to]: [Position, Position]) => (
+          <Line
+            from={[from.longitude, from.latitude]}
+            to={[to.longitude, to.latitude]}
+            strokeWidth={0.3}
+            strokeLinecap="round" />
+        )))}
+      </ZoomableGroup>
     </ComposableMap >
   </>;
 };

@@ -6,6 +6,7 @@ import {
   ComposableMap,
   Geographies,
   Geography,
+  ZoomableGroup,
 } from "react-simple-maps";
 
 import List from "@mui/material/List";
@@ -88,25 +89,27 @@ const MapChart = () => {
   return <>
     {year ? <SliderSelect values={years} value={year} onChange={setYear} label="Year" /> : null}
     <ComposableMap height={500}>
-      <Geographies geography={geoUrl} projectionConfig={{ scale: 1 }}>
-        {({ geographies }) =>
-          geographies.map((geo) => {
-            const cur = data.find(s => (mapping[s.country] || s.country) === geo.properties.name);
-            const fill = cur ? colorScale(cur.co2_emitted) : colorScale(0);
+      <ZoomableGroup>
+        <Geographies geography={geoUrl} projectionConfig={{ scale: 1 }}>
+          {({ geographies }) =>
+            geographies.map((geo) => {
+              const cur = data.find(s => (mapping[s.country] || s.country) === geo.properties.name);
+              const fill = cur ? colorScale(cur.co2_emitted) : colorScale(0);
 
-            return <Geography
-              key={geo.rsmKey}
-              geography={geo}
-              fill={fill}
-              id={geo.rsmKey}
-              onMouseEnter={() => {
-                setTarget([geo.properties.name, cur])
-              }}
-              onMouseLeave={() => setTarget(null)}
-            />
-          })
-        }
-      </Geographies>
+              return <Geography
+                key={geo.rsmKey}
+                geography={geo}
+                fill={fill}
+                id={geo.rsmKey}
+                onMouseEnter={() => {
+                  setTarget([geo.properties.name, cur])
+                }}
+                onMouseLeave={() => setTarget(null)}
+              />
+            })
+          }
+        </Geographies>
+      </ZoomableGroup>
     </ComposableMap>
     {target != null && <MouseTracker><Tip country={target[0]} aggregate={target[1]} /></MouseTracker>}
   </>;
