@@ -19,6 +19,7 @@ import { CountryAggregate, fetchAggregates, quantities } from "../data/timeserie
 import { MouseTracker } from "../tooltip";
 import { format } from "./aggregates";
 import SliderSelect from "../common/sliderSelect";
+import { Box } from "@mui/material";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
 
@@ -86,7 +87,7 @@ const MapChart = () => {
       "#67000d",
     ]);
 
-  return <>
+  return <Box sx={{ mx: 8 }}>
     {year ? <SliderSelect values={years} value={year} onChange={setYear} label="Year" /> : null}
     <ComposableMap height={500}>
       <ZoomableGroup>
@@ -112,7 +113,7 @@ const MapChart = () => {
       </ZoomableGroup>
     </ComposableMap>
     {target != null && <MouseTracker><Tip country={target[0]} aggregate={target[1]} /></MouseTracker>}
-  </>;
+  </Box>;
 };
 
 export default MapChart;

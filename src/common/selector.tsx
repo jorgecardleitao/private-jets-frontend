@@ -1,7 +1,6 @@
 import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 interface SelectorProps {
     values: { [name: string]: string }
@@ -10,22 +9,16 @@ interface SelectorProps {
     label: string
 }
 
-export default function Selector(props: SelectorProps) {
+export default function Selector({ values, value, onChange, label }: SelectorProps) {
     return <FormControl sx={{ m: 1, minWidth: 80 }}>
-        <InputLabel id={`${props.label}-label`}>{props.label}</InputLabel>
-        <Select
-            labelId={`${props.label}-label`}
-            id={props.label}
-            value={props.value}
-            onChange={e => props.onChange((e.target as HTMLTextAreaElement).value)}
-            autoWidth
-            label="Option"
-        >
-            {
-                Object.entries(props.values).map(([k, v]) => {
-                    return <MenuItem value={k}>{v}</MenuItem>
-                })
-            }
-        </Select>
+        <Autocomplete
+            disablePortal
+            value={value}
+            onChange={(_, v) => onChange(v)}
+            options={Object.keys(values)}
+            sx={{ width: 300 }}
+            getOptionLabel={v => values[v]}
+            renderInput={(params) => <TextField {...params} label={label} />}
+        />
     </FormControl>
 }
