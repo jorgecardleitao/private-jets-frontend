@@ -23,6 +23,25 @@ import { Box } from "@mui/material";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
 
+const colors = [
+  "#08306b",
+  "#08519c",
+  "#2171b5",
+  "#4292c6",
+  "#6baed6",
+  "#9ecae1",
+  "#c6dbef",
+  "#deebf7",
+  "#fee0d2",
+  "#fcbba1",
+  "#fc9272",
+  "#fb6a4a",
+  "#ef3b2c",
+  "#cb181d",
+  "#a50f15",
+  "#67000d",
+];
+
 const Tip = ({ country, aggregate }) => {
   return <Paper variant="outlined" sx={{ p: 1 }}>
     <><Typography>{country}</Typography>
@@ -68,30 +87,13 @@ const MapChart = () => {
 
   const colorScale = scaleQuantile()
     .domain(aggregates.map(d => d.co2_emitted))
-    .range([
-      "#08306b",
-      "#08519c",
-      "#2171b5",
-      "#4292c6",
-      "#6baed6",
-      "#9ecae1",
-      "#c6dbef",
-      "#deebf7",
-      "#fee0d2",
-      "#fcbba1",
-      "#fc9272",
-      "#fb6a4a",
-      "#ef3b2c",
-      "#cb181d",
-      "#a50f15",
-      "#67000d",
-    ]);
+    .range(colors);
 
-  return <Box sx={{ mx: 8 }}>
+  return <Box>
     {year ? <SliderSelect values={years} value={year} onChange={setYear} label="Year" /> : null}
     <ComposableMap height={500}>
       <ZoomableGroup>
-        <Geographies geography={geoUrl} projectionConfig={{ scale: 1 }}>
+        <Geographies geography={geoUrl}>
           {({ geographies }) =>
             geographies.map((geo) => {
               const cur = data.find(s => (mapping[s.country] || s.country) === geo.properties.name);
