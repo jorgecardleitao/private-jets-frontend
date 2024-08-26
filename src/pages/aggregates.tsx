@@ -24,8 +24,8 @@ const units = [
 ];
 
 function kilomega(amount: number) {
-    const exp = amount === 0 ? 0 : Math.floor(Math.log(amount) / Math.log(1024));
-    const factor = Math.pow(1024, exp);
+    const exp = amount === 0 ? 0 : Math.floor(Math.log(amount) / Math.log(1000));
+    const factor = Math.pow(1000, exp);
 
     return {
         amount: amount / factor,
