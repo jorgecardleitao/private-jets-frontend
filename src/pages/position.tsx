@@ -3,7 +3,6 @@ import { useEffect, useState } from "preact/hooks";
 import { scaleLinear } from "d3-scale";
 
 import {
-  ComposableMap,
   Geographies,
   Geography,
   Line,
@@ -12,14 +11,12 @@ import {
 
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import useTheme from "@mui/material/styles/useTheme";
-import Grid from "@mui/material/Grid";
 
 import { fetchPositions, Position } from "../data/position";
 import { Aircraft } from "../data/aircraft";
 import SliderSelect from "../common/sliderSelect";
-import { format } from "./aggregates";
-import Box from "@mui/material/Box";
+import MapWithScale from "../common/mapWithScale";
+import Typography from "@mui/material/Typography/Typography";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
 
@@ -51,60 +48,6 @@ const colors = new Map([
   [40000, "#cb16cd"],
 ])
 
-const style = `
-text {
-  font-size: 3px;
-}
-
-@media (max-width: 600px) {
-  text {
-    font-size: 3px;
-  }
-}
-
-@media (max-width: 800px) {
-  text {
-    font-size: 4px;
-  }
-}
-`
-
-const Scale = ({ fill, height }: { fill: string, height: number }) => {
-  const min = Math.min(...colors.keys())
-  const max = Math.max(...colors.keys())
-  const scale = (v: number) => min + (max - min) * v
-
-  const margin = 5
-  const rectWidth = 3
-  const width = rectWidth + 12
-
-  return <svg viewBox={`0 0 ${width} ${height}`}>
-    <style>{style}</style>
-    <defs>
-      <linearGradient id="gradient" x1="0" x2="0" y1="1" y2="0">
-        {[...Iterator.map(colors.entries(), ([key, value]: [number, string]) => <stop offset={`${(key - min) / (max - min) * 100}%`} stop-color={value} />)]}
-      </linearGradient>
-    </defs>
-    <rect
-      x={0}
-      y={margin}
-      width={rectWidth}
-      height={height - 2 * margin}
-      style={{ fill: "url(#gradient)" }}
-    >
-    </rect>
-    {[...Iterator.map(colors.keys(), (key: number) => <text
-      x={1 + rectWidth}
-      y={margin + (height - 2 * margin) - (height - 2 * margin) * (key - min) / (max - min)}
-      stroke="none"
-      dominant-baseline="central"
-      fill={fill}>{format(scale((key - min) / (max - min)))}
-    </text>
-    )
-    ]}
-  </svg>
-}
-
 const to_month = (a: number): string => {
   const year = Math.floor(a / 12);
   const month = a % 12;
@@ -112,8 +55,6 @@ const to_month = (a: number): string => {
 }
 
 const PositionChart = ({ aircrafts }: { aircrafts: Aircraft[] }) => {
-  const theme = useTheme();
-
   const current = new Date();
   const currentYear = current.getUTCFullYear();
   const currentMonth = current.getUTCMonth();
@@ -129,42 +70,39 @@ const PositionChart = ({ aircrafts }: { aircrafts: Aircraft[] }) => {
 
   const colorScale = scaleLinear()
     .domain(colors.keys())
-    .range(colors.values());
+    .range(colors.values())
+    .clamp(true)
 
   return <>
+    <Typography align="center" variant="h5">
+      Flights of a specific private aircraft at a given month and corresponding altitude (feet)
+    </Typography>
     <AicraftSelector values={aircrafts} value={aircraft} onChange={setAircraft} label="Aircraft" />
     <SliderSelect values={months} value={month} onChange={setMonth} label="Month" marksEvery={6} />
-    <Grid container spacing={1}>
-      <Grid item xs={11}>
-        <ComposableMap height={385 * 11 / 12 * 800 / 600}>
-          <ZoomableGroup>
-            <Geographies geography={geoUrl} projectionConfig={{ scale: 1 }}>
-              {({ geographies }) =>
-                geographies.map((geo) => {
-                  return <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    id={geo.rsmKey}
-                    fill="#2171b5"
-                  />
-                })
-              }
-            </Geographies>
-            {Array.from(Iterator.map(window(positions.filter((_, index) => index % 10 == 0), 2), ([from, to]: [Position, Position]) => (
-              <Line
-                from={[from.longitude, from.latitude]}
-                to={[to.longitude, to.latitude]}
-                strokeWidth={0.3}
-                stroke={to.altitude ? colorScale(to.altitude) : "#767b74"}
-                strokeLinecap="round" />
-            )))}
-          </ZoomableGroup>
-        </ComposableMap >
-      </Grid>
-      <Grid item xs={1}>
-        <Scale fill={theme.palette.text.primary} height={920 * 1 / 12 * 800 / 600} />
-      </Grid>
-    </Grid >
+    <MapWithScale height={385} colors={colors}>
+      <ZoomableGroup>
+        <Geographies geography={geoUrl} projectionConfig={{ scale: 1 }}>
+          {({ geographies }) =>
+            geographies.map((geo) => {
+              return <Geography
+                key={geo.rsmKey}
+                geography={geo}
+                id={geo.rsmKey}
+                fill="#2171b5"
+              />
+            })
+          }
+        </Geographies>
+        {Array.from(Iterator.map(window(positions.filter((_, index) => index % 10 == 0), 2), ([from, to]: [Position, Position]) => (
+          <Line
+            from={[from.longitude, from.latitude]}
+            to={[to.longitude, to.latitude]}
+            strokeWidth={0.3}
+            stroke={to.altitude ? colorScale(to.altitude) : "#767b74"}
+            strokeLinecap="round" />
+        )))}
+      </ZoomableGroup>
+    </MapWithScale>
   </>;
 };
 

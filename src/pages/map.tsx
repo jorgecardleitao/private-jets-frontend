@@ -1,9 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
 
-import { scaleQuantile } from "d3-scale";
+import { scaleLinear } from "d3-scale";
 
 import {
-  ComposableMap,
   Geographies,
   Geography,
   ZoomableGroup,
@@ -20,27 +19,28 @@ import { MouseTracker } from "../tooltip";
 import { format } from "./aggregates";
 import SliderSelect from "../common/sliderSelect";
 import { Box } from "@mui/material";
+import MapWithScale from "../common/mapWithScale";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
 
-const colors = [
-  "#08306b",
-  "#08519c",
-  "#2171b5",
-  "#4292c6",
-  "#6baed6",
-  "#9ecae1",
-  "#c6dbef",
-  "#deebf7",
-  "#fee0d2",
-  "#fcbba1",
-  "#fc9272",
-  "#fb6a4a",
-  "#ef3b2c",
-  "#cb181d",
-  "#a50f15",
-  "#67000d",
-];
+const colors = new Map([
+  [0, "#08306b"],
+  [10_000_000, "#08519c"],
+  [20_000_000, "#2171b5"],
+  [30_000_000, "#4292c6"],
+  [40_000_000, "#6baed6"],
+  [50_000_000, "#9ecae1"],
+  [60_000_000, "#c6dbef"],
+  [70_000_000, "#deebf7"],
+  [80_000_000, "#fee0d2"],
+  [90_000_000, "#fcbba1"],
+  [100_000_000, "#fc9272"],
+  [200_000_000, "#fb6a4a"],
+  [300_000_000, "#ef3b2c"],
+  [400_000_000, "#cb181d"],
+  [500_000_000, "#a50f15"],
+  [1_000_000_000, "#67000d"],
+]);
 
 const Tip = ({ country, aggregate }) => {
   return <Paper variant="outlined" sx={{ p: 1 }}>
@@ -62,10 +62,10 @@ const MapChart = () => {
 
   const [target, setTarget] = useState<[string, CountryAggregate]>(null);
 
-  const [year, setYear] = useState<number>(null);
+  const [year, setYear] = useState<number>(2023);
 
   useEffect(() => {
-    fetchAggregates("country", "year").then(setAggregates).then(() => setYear(2023))
+    fetchAggregates("country", "year").then(setAggregates)
   }, [])
 
   const mapping = {
@@ -85,13 +85,17 @@ const MapChart = () => {
 
   const data = aggregates.filter(v => Number(v.date.slice(0, 4)) == year)
 
-  const colorScale = scaleQuantile()
-    .domain(aggregates.map(d => d.co2_emitted))
-    .range(colors);
+  const colorScale = scaleLinear()
+    .domain(colors.keys())
+    .range(colors.values())
+    .clamp(true)
 
   return <Box>
     {year ? <SliderSelect values={years} value={year} onChange={setYear} label="Year" /> : null}
-    <ComposableMap height={500}>
+    <Typography align="center" variant="h5">
+      Emissions of Private Aviation by Country in {year} (kg of CO2)
+    </Typography>
+    <MapWithScale height={385} colors={colors}>
       <ZoomableGroup>
         <Geographies geography={geoUrl}>
           {({ geographies }) =>
@@ -113,7 +117,7 @@ const MapChart = () => {
           }
         </Geographies>
       </ZoomableGroup>
-    </ComposableMap>
+    </MapWithScale>
     {target != null && <MouseTracker><Tip country={target[0]} aggregate={target[1]} /></MouseTracker>}
   </Box>;
 };

@@ -15,7 +15,7 @@ export default function SliderSelect(props: SelectProps) {
         <InputLabel id={`${props.label}-label`}>{props.label}</InputLabel>
         <Slider
             aria-label={`${props.label}-label`}
-            defaultValue={0}
+            value={props.value}
             valueLabelDisplay="off"
             step={1}
             onChange={(_, v) => props.onChange(v as number)}

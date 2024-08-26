@@ -33,9 +33,9 @@ function kilomega(amount: number) {
     }
 }
 
-export function format(value: number): string {
+export function format(value: number, decimal: number = 1): string {
     const scaled = kilomega(value);
-    return `${scaled.amount.toFixed(1)} ${scaled.symbol}`
+    return `${scaled.amount.toFixed(decimal)} ${scaled.symbol}`
 }
 
 interface Quantities {
