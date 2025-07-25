@@ -1,5 +1,5 @@
 # Private aircrafts
 
-This repository
+This repository maintains the source code of https://privateaircrafts.eu.
 
-This application uses all its data and methodology from [jorgecardleitao/private-jets](https://github.com/jorgecardleitao/private-jets).
+It relies on the data and methodology from [jorgecardleitao/private-jets](https://github.com/jorgecardleitao/private-jets).
