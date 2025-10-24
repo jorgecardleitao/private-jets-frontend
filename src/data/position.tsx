@@ -6,6 +6,6 @@ export interface Position {
 }
 
 export async function fetchPositions(icao_number: string, month: string): Promise<Position[]> {
-    const url = `https://private-jets.fra1.digitaloceanspaces.com/position/icao_number=${icao_number}/month=${month}/data.json`
+    const url = `https://private-jets.fsn1.your-objectstorage.com/position/icao_number=${icao_number}/month=${month}/data.json`
     return fetch(url, { mode: 'cors' }).then(response => response.ok ? response.json() : [])
 }

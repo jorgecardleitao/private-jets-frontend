@@ -53,7 +53,7 @@ export async function fetchAggregates(dimension: "model", scale: Scale): Promise
 export async function fetchAggregates(dimension: "country", scale: Scale): Promise<CountryAggregate[]>
 export async function fetchAggregates(dimension: Dimension, scale: Scale): Promise<ModelAggregate[] | CountryAggregate[]>
 export async function fetchAggregates(dimension: Dimension, scale: Scale): Promise<ModelAggregate[] | CountryAggregate[]> {
-    const url = `https://private-jets.fra1.digitaloceanspaces.com/analysis/v1/by_${dimension}_${scale}.csv`
+    const url = `https://private-jets.fsn1.your-objectstorage.com/analysis/v1/by_${dimension}_${scale}.csv`
     return fetch(url, { mode: 'cors' }).then(response => response.text()).then(content => loadAggregates(dimension, content))
 }
 

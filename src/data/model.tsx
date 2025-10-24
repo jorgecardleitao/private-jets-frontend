@@ -60,6 +60,6 @@ function loadAircraftModels(content: string): AircraftModel[] {
 }
 
 export async function fetchAircraftModels(): Promise<AircraftModel[]> {
-    const url = "https://private-jets.fra1.digitaloceanspaces.com/model/db/data.csv";
+    const url = "https://private-jets.fsn1.your-objectstorage.com/model/db/data.csv";
     return fetch(url, { mode: 'cors' }).then(response => response.text()).then(loadAircraftModels)
 }
