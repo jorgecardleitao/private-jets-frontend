@@ -1,4 +1,5 @@
 import { deserialize } from "../serde"
+import { BASE_URL } from "./constants"
 
 export interface Source {
     url: string
@@ -60,6 +61,6 @@ function loadAircraftModels(content: string): AircraftModel[] {
 }
 
 export async function fetchAircraftModels(): Promise<AircraftModel[]> {
-    const url = "https://private-jets.fsn1.your-objectstorage.com/model/db/data.csv";
+    const url = `${BASE_URL}/model/db/data.csv`;
     return fetch(url, { mode: 'cors' }).then(response => response.text()).then(loadAircraftModels)
 }
