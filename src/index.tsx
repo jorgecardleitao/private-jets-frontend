@@ -1,10 +1,6 @@
-import { Fragment, render } from 'preact';
+import { render } from 'preact';
 import { useEffect, useMemo, useState } from 'preact/hooks';
-import Router, { Route, route, getCurrentUrl } from 'preact-router';
-
-import {
-	createColumnHelper,
-} from '@tanstack/react-table'
+import Router, { route, getCurrentUrl } from 'preact-router';
 
 import { createTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
@@ -20,8 +16,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import Home from './pages/home'
+import ModelsPage from './pages/models'
 import Methodology from './pages/methodology'
-import ModelTable from './table';
 import { AircraftModel, fetchAircraftModels } from './data/model'
 import { fetchAircraftMonths } from './data/aircraft'
 import AircraftsPage from './pages/aircrafts'
@@ -37,25 +33,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Drawer from '@mui/material/Drawer';
 import Footer from './footer';
-
-function AircraftModelTable({ models }: { models: AircraftModel[] }) {
-	const columnHelper = createColumnHelper<AircraftModel>()
-	const columns = [
-		columnHelper.accessor('model', {
-			header: () => 'Model',
-			cell: info => info.getValue(),
-		}),
-		columnHelper.accessor('gph', {
-			header: () => 'Consumption (gph)',
-			cell: info => Math.round(info.getValue() * 10) / 10,
-		}),
-		columnHelper.accessor('sources', {
-			header: () => 'Source',
-			cell: info => <a href={info.getValue()[0].url}>source ({info.getValue()[0].date})</a>,
-		})
-	]
-	return ModelTable<AircraftModel>(models, columns)
-}
 
 type Tab = "introduction" | "models" | "aircrafts" | "timeseries" | "compare" | "positions" | "methodology"
 
@@ -203,14 +180,7 @@ export default function App() {
 	);
 }
 
-function ModelsPage({ models, path }: { models: AircraftModel[], path?: string }) {
-	return <Fragment>
-		<Typography component="h2" color="primary" gutterBottom>
-			Private aircraft models
-		</Typography>
-		<AircraftModelTable models={models} />
-	</Fragment>;
-}
+
 
 export function Main({ onRouteChange }: { onRouteChange?: (url: string) => void }) {
 	const [models, setModels] = useState<AircraftModel[]>([]);
