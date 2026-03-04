@@ -5,9 +5,16 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { ChartsGrid, ChartsTextStyle, ChartsTooltip, ChartsXAxis, ChartsYAxis, ResponsiveChartContainer } from '@mui/x-charts';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { BarPlot } from '@mui/x-charts/BarChart';
+
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
+import TableChartIcon from '@mui/icons-material/TableChart';
 
 import { ModelAggregate, CountryAggregate, fetchAggregates, quantities, Dimension } from '../data/timeseries';
 import ModelTable from '../table';
@@ -33,13 +40,54 @@ export default function Compare({ path }: { path?: string } = {}) {
     let dataset = aggregates.filter(v => Number(v.date.slice(0, 4)) == year).filter(v => v[dimension] != "World");
     dataset.sort((v1, v2) => -(v1[quantity] - v2[quantity]));
 
-    return <Box>
-        {year ? <SliderSelect values={years} value={year} onChange={setYear} label="Year" /> : null}
-        <FormControlLabel control={<Switch onChange={(_, value) => setIsTable(value)} />} label="Table" />
-        <Selector values={dimensions} value={dimension} onChange={setDimension} label="What" />
-        {!is_table ? <Selector values={quantities} value={quantity} onChange={setQuantity} label="Quantity" /> : null}
-        {is_table ? <AggregateTable dataset={dataset} quantity={quantity} dimension={dimension} /> : <Chart dataset={dataset.slice(0, 30)} quantity={quantity} dimension={dimension} />}
-    </Box>
+    return (
+        <Container maxWidth="lg">
+            {/* Header */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2, mb: 3 }}>
+                <CompareArrowsIcon sx={{ fontSize: 36, color: 'warning.main' }} />
+                <Box>
+                    <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', lineHeight: 1.2 }}>
+                        By country &amp; model
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        Rank countries or aircraft models by any metric for a given year
+                    </Typography>
+                </Box>
+            </Box>
+
+            {/* Controls */}
+            <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: year ? 2 : 0 }}>
+                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+                        <Selector values={dimensions} value={dimension} onChange={setDimension} label="Group by" />
+                        {!is_table && <Selector values={quantities} value={quantity} onChange={setQuantity} label="Quantity" />}
+                    </Box>
+                    <ToggleButtonGroup
+                        size="small"
+                        value={is_table ? 'table' : 'chart'}
+                        exclusive
+                        onChange={(_, v) => { if (v !== null) setIsTable(v === 'table'); }}
+                    >
+                        <ToggleButton value="chart"><ShowChartIcon sx={{ mr: 0.5 }} />Chart</ToggleButton>
+                        <ToggleButton value="table"><TableChartIcon sx={{ mr: 0.5 }} />Table</ToggleButton>
+                    </ToggleButtonGroup>
+                </Box>
+                {year && (
+                    <Box sx={{ px: 1 }}>
+                        <SliderSelect values={years} value={year} onChange={setYear} label="Year" />
+                    </Box>
+                )}
+            </Paper>
+
+            {/* Content */}
+            <Paper variant="outlined" sx={{ p: 2 }}>
+                {is_table
+                    ? <AggregateTable dataset={dataset} quantity={quantity} dimension={dimension} />
+                    : <Chart dataset={dataset.slice(0, 30)} quantity={quantity} dimension={dimension} />
+                }
+            </Paper>
+        </Container>
+    );
 }
 
 interface ChartsProps {
