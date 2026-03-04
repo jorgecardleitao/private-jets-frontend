@@ -11,12 +11,18 @@ import {
 
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+
+import PublicIcon from "@mui/icons-material/Public";
+import RadarIcon from "@mui/icons-material/Radar";
 
 import { fetchPositions, Position } from "../data/position";
 import { Aircraft, fetchAircrafts, interpolateMonth } from "../data/aircraft";
 import SliderSelect from "../common/sliderSelect";
 import MapWithScale from "../common/mapWithScale";
-import Typography from "@mui/material/Typography/Typography";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
 
@@ -77,8 +83,6 @@ const PositionChart = ({ path, availableMonths }: { path?: string, availableMont
           newAircrafts.find(a => a.icao_number === prev?.icao_number)
           ?? newAircrafts.find(a => a.icao_number === "a6382d")
           ?? newAircrafts[0];
-        // Preserve the same reference when the aircraft hasn't changed so that
-        // the positions useEffect is not re-triggered spuriously.
         return prev?.icao_number === next?.icao_number ? prev : next;
       });
       setAircraftsLoading(false);
@@ -99,37 +103,61 @@ const PositionChart = ({ path, availableMonths }: { path?: string, availableMont
     .range(colors.values())
     .clamp(true)
 
-  return <>
-    <Typography align="center" variant="h5">
-      Flights of a specific private aircraft at a given month and corresponding altitude (feet)
-    </Typography>
-    <AicraftSelector values={aircrafts} value={aircraft} onChange={setAircraft} onOpen={fetchAircraftsForMonth} loading={aircraftsLoading} label="Aircraft" />
-    <SliderSelect values={months} value={monthIndex} onChange={setMonthIndex} label="Month" marksEvery={6} />
-    <MapWithScale height={385} colors={colors}>
-      <ZoomableGroup>
-        <Geographies geography={geoUrl} projectionConfig={{ scale: 1 }}>
-          {({ geographies }) =>
-            geographies.map((geo) => {
-              return <Geography
-                key={geo.rsmKey}
-                geography={geo}
-                id={geo.rsmKey}
-                fill="#2171b5"
-              />
-            })
-          }
-        </Geographies>
-        {Array.from(Iterator.map(window(positions.filter((_, index) => index % 10 == 0), 2), ([from, to]: [Position, Position]) => (
-          <Line
-            from={[from.longitude, from.latitude]}
-            to={[to.longitude, to.latitude]}
-            strokeWidth={0.3}
-            stroke={to.altitude ? colorScale(to.altitude) : "#767b74"}
-            strokeLinecap="round" />
-        )))}
-      </ZoomableGroup>
-    </MapWithScale>
-  </>;
+  return (
+    <Container maxWidth="lg">
+      {/* Header */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2, mb: 3 }}>
+        <PublicIcon sx={{ fontSize: 36, color: 'error.main' }} />
+        <Box>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', lineHeight: 1.2 }}>
+            Geopositions
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Flight paths of a specific aircraft in a given month, coloured by altitude (feet)
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Controls */}
+      <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+          <RadarIcon sx={{ color: 'primary.main' }} />
+          <AicraftSelector values={aircrafts} value={aircraft} onChange={setAircraft} onOpen={fetchAircraftsForMonth} loading={aircraftsLoading} label="Aircraft (tail number)" />
+        </Box>
+        <Box sx={{ px: 1 }}>
+          <SliderSelect values={months} value={monthIndex} onChange={setMonthIndex} label="Month" marksEvery={6} />
+        </Box>
+      </Paper>
+
+      {/* Map */}
+      <Paper variant="outlined" sx={{ p: 1, overflow: 'hidden' }}>
+        <MapWithScale height={385} colors={colors}>
+          <ZoomableGroup>
+            <Geographies geography={geoUrl} projectionConfig={{ scale: 1 }}>
+              {({ geographies }) =>
+                geographies.map((geo) => (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    id={geo.rsmKey}
+                    fill="#2171b5"
+                  />
+                ))
+              }
+            </Geographies>
+            {Array.from(Iterator.map(window(positions.filter((_, index) => index % 10 == 0), 2), ([from, to]: [Position, Position]) => (
+              <Line
+                from={[from.longitude, from.latitude]}
+                to={[to.longitude, to.latitude]}
+                strokeWidth={0.3}
+                stroke={to.altitude ? colorScale(to.altitude) : "#767b74"}
+                strokeLinecap="round" />
+            )))}
+          </ZoomableGroup>
+        </MapWithScale>
+      </Paper>
+    </Container>
+  );
 };
 
 export default PositionChart;
