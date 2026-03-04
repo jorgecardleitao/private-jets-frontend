@@ -24,6 +24,7 @@ import Methodology from './pages/methodology'
 import ModelTable from './table';
 import { AircraftModel, fetchAircraftModels } from './data/model'
 import { Aircraft, fetchAircrafts } from './data/aircraft'
+import AircraftsPage from './pages/aircrafts'
 import Aggregates from './pages/aggregates';
 import Compare from './pages/compare';
 import Positions from './pages/position';
@@ -54,29 +55,6 @@ function AircraftModelTable({ models }: { models: AircraftModel[] }) {
 		})
 	]
 	return ModelTable<AircraftModel>(models, columns)
-}
-
-function AircraftTable({ aircrafts }: { aircrafts: Aircraft[] }) {
-	const columnHelper = createColumnHelper<Aircraft>()
-	const columns = [
-		columnHelper.accessor('tail_number', {
-			header: () => 'Tail number',
-			cell: info => info.getValue(),
-		}),
-		columnHelper.accessor('model', {
-			header: () => 'Model',
-			cell: info => info.getValue(),
-		}),
-		columnHelper.accessor('country', {
-			header: () => 'Country of registration',
-			cell: info => info.getValue(),
-		}),
-		columnHelper.accessor('icao_number', {
-			header: () => 'ICAO number',
-			cell: info => <a href={`https://globe.adsbexchange.com/?icao=${info.getValue()}`}>{info.getValue()}</a >,
-		}),
-	]
-	return ModelTable<Aircraft>(aircrafts, columns)
 }
 
 type Tab = "introduction" | "models" | "aircrafts" | "timeseries" | "compare" | "positions" | "methodology"
@@ -225,15 +203,6 @@ export default function App() {
 	);
 }
 
-function AircraftsPage({ aircrafts, path }: { aircrafts: Aircraft[], path?: string }) {
-	return <Fragment>
-		<Typography component="h2" color="primary" gutterBottom>
-			Private aircrafts
-		</Typography>
-		<AircraftTable aircrafts={aircrafts} />
-	</Fragment>;
-}
-
 function ModelsPage({ models, path }: { models: AircraftModel[], path?: string }) {
 	return <Fragment>
 		<Typography component="h2" color="primary" gutterBottom>
@@ -251,14 +220,14 @@ export function Main({ onRouteChange }: { onRouteChange?: (url: string) => void 
 		fetchAircraftModels().then(setModels)
 	}, [])
 	useEffect(() => {
-		fetchAircrafts().then(setAircrafts)
+		fetchAircrafts("2024-07").then(setAircrafts)
 	}, [])
 
 	return (
 		<Router onChange={(e) => onRouteChange?.(e.url)}>
 			<Home path="/" />
 			<ModelsPage path="/models" models={models} />
-			<AircraftsPage path="/aircrafts" aircrafts={aircrafts} />
+			<AircraftsPage path="/aircrafts" />
 			<Aggregates path="/timeseries" />
 			<Compare path="/compare" />
 			<Positions path="/positions" aircrafts={aircrafts} />
