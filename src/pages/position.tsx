@@ -123,6 +123,6 @@ function AicraftSelector({ values, value, onChange, label }: AicraftSelectorProp
     options={values}
     sx={{ width: 300 }}
     getOptionLabel={a => a.tail_number}
-    renderInput={(params) => <TextField {...params} label={label} />}
+    renderInput={(params) => <TextField {...(params as any)} label={label} />}
   />
 }
