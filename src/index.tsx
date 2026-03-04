@@ -1,5 +1,6 @@
 import { Fragment, render } from 'preact';
 import { useEffect, useMemo, useState } from 'preact/hooks';
+import Router, { Route, route, getCurrentUrl } from 'preact-router';
 
 import {
 	createColumnHelper,
@@ -11,7 +12,6 @@ import Box from '@mui/material/Box';
 import { ThemeProvider } from '@emotion/react';
 import Toolbar from '@mui/material/Toolbar';
 import AppBar from '@mui/material/AppBar';
-import { Tab } from '@mui/icons-material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -81,7 +81,7 @@ function AircraftTable({ aircrafts }: { aircrafts: Aircraft[] }) {
 
 type Tab = "introduction" | "models" | "aircrafts" | "timeseries" | "compare" | "positions" | "methodology"
 
-const NAMES = {
+const NAMES: Record<Tab, string> = {
 	"introduction": "Introduction",
 	"models": "Models",
 	"aircrafts": "Aircrafts",
@@ -91,7 +91,7 @@ const NAMES = {
 	"methodology": "Methodology",
 }
 
-const DESCRIPTIONS = {
+const DESCRIPTIONS: Record<Tab, string> = {
 	"introduction": "World map with main statistics per country",
 	"models": "All aircraft models used in private aviation",
 	"aircrafts": "List of all aicrafts whose model is used in private aviation",
@@ -101,15 +101,24 @@ const DESCRIPTIONS = {
 	"methodology": "Description of how the data was collected and analyzed",
 }
 
+const ROUTES: Record<Tab, string> = {
+	"introduction": "/",
+	"models": "/models",
+	"aircrafts": "/aircrafts",
+	"timeseries": "/timeseries",
+	"compare": "/compare",
+	"positions": "/positions",
+	"methodology": "/methodology",
+}
+
 const drawerWidth = 240;
 
 export default function App() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 	const [mobileOpen, setMobileOpen] = useState(false);
+	const [currentUrl, setCurrentUrl] = useState(getCurrentUrl());
 
 	const [mode, setMode] = useState<'light' | 'dark'>(prefersDarkMode ? 'dark' : 'light');
-
-	const [tab, setTab] = useState<Tab>("introduction");
 
 	const theme = useMemo(
 		() =>
@@ -132,11 +141,11 @@ export default function App() {
 			</Typography>
 			<Divider />
 			<List>
-				{Object.entries(NAMES).map(([page, title]) => (
+				{(Object.entries(NAMES) as [Tab, string][]).map(([page, title]) => (
 
 					<ListItem key={page} disablePadding>
 						<Tooltip title={DESCRIPTIONS[page]}>
-							<ListItemButton sx={{ textAlign: 'center' }} onClick={(_) => setTab(page as Tab)}>
+							<ListItemButton sx={{ textAlign: 'center' }} onClick={() => route(ROUTES[page])}>
 								<ListItemText primary={title} />
 							</ListItemButton>
 						</Tooltip>
@@ -170,13 +179,15 @@ export default function App() {
 							Private aircrafts
 						</Typography>
 						<Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-							{Object.entries(NAMES).map(([page, title]) => (
+							{(Object.entries(NAMES) as [Tab, string][]).map(([page, title]) => (
 								<Tooltip title={DESCRIPTIONS[page]}>
 									<Button
-										sx={{ ml: 1 }}
+										sx={{ ml: 1, fontWeight: currentUrl === ROUTES[page] ? 'bold' : 'normal' }}
 										key={page}
-										onClick={(_) => setTab(page as Tab)}
+										href={ROUTES[page]}
+										onClick={(e) => { e.preventDefault(); route(ROUTES[page]); }}
 										color="inherit"
+										variant={currentUrl === ROUTES[page] ? 'outlined' : 'text'}
 									>
 										{title}
 									</Button>
@@ -206,7 +217,7 @@ export default function App() {
 				</nav>
 				<Box component="main" sx={{ p: 3 }}>
 					<Toolbar />
-					<Main tab={tab} />
+					<Main onRouteChange={setCurrentUrl} />
 				</Box>
 				<Footer />
 			</Box>
@@ -214,7 +225,25 @@ export default function App() {
 	);
 }
 
-export function Main({ tab }: { tab: Tab }) {
+function AircraftsPage({ aircrafts, path }: { aircrafts: Aircraft[], path?: string }) {
+	return <Fragment>
+		<Typography component="h2" color="primary" gutterBottom>
+			Private aircrafts
+		</Typography>
+		<AircraftTable aircrafts={aircrafts} />
+	</Fragment>;
+}
+
+function ModelsPage({ models, path }: { models: AircraftModel[], path?: string }) {
+	return <Fragment>
+		<Typography component="h2" color="primary" gutterBottom>
+			Private aircraft models
+		</Typography>
+		<AircraftModelTable models={models} />
+	</Fragment>;
+}
+
+export function Main({ onRouteChange }: { onRouteChange?: (url: string) => void }) {
 	const [models, setModels] = useState<AircraftModel[]>([]);
 	const [aircrafts, setAircrafts] = useState<Aircraft[]>([]);
 
@@ -225,29 +254,17 @@ export function Main({ tab }: { tab: Tab }) {
 		fetchAircrafts().then(setAircrafts)
 	}, [])
 
-	const aircraftsFragment = () => <Fragment>
-		<Typography component="h2" color="primary" gutterBottom>
-			Private aircrafts
-		</Typography>
-		<AircraftTable aircrafts={aircrafts} />
-	</Fragment>;
-
-	const modelsFragment = () => <Fragment>
-		<Typography component="h2" color="primary" gutterBottom>
-			Private aircraft models
-		</Typography>
-		<AircraftModelTable models={models} />
-	</Fragment>;
-
-	return {
-		"introduction": () => <Home />,
-		"aircrafts": aircraftsFragment,
-		"models": modelsFragment,
-		"timeseries": () => <Aggregates />,
-		"compare": () => <Compare />,
-		"positions": () => <Positions aircrafts={aircrafts} />,
-		"methodology": () => <Methodology />,
-	}[tab]()
+	return (
+		<Router onChange={(e) => onRouteChange?.(e.url)}>
+			<Home path="/" />
+			<ModelsPage path="/models" models={models} />
+			<AircraftsPage path="/aircrafts" aircrafts={aircrafts} />
+			<Aggregates path="/timeseries" />
+			<Compare path="/compare" />
+			<Positions path="/positions" aircrafts={aircrafts} />
+			<Methodology path="/methodology" />
+		</Router>
+	);
 }
 
 render(<App />, document.getElementById('app'));

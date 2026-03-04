@@ -17,7 +17,7 @@ import { format } from './aggregates';
 
 const dimensions = { "country": "Country of registration", "model": "Aircraft Model" }
 
-export default function Compare() {
+export default function Compare({ path }: { path?: string } = {}) {
     const [is_table, setIsTable] = useState<boolean>(false);
     const [dimension, setDimension] = useState<Dimension>("country");
     const [quantity, setQuantity] = useState<string>("co2_emitted");

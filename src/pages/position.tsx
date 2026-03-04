@@ -54,7 +54,7 @@ const to_month = (a: number): string => {
   return `${2019 + year}-${String(1 + month).padStart(2, "0")}`
 }
 
-const PositionChart = ({ aircrafts }: { aircrafts: Aircraft[] }) => {
+const PositionChart = ({ aircrafts, path }: { aircrafts: Aircraft[], path?: string }) => {
   const current = new Date();
   const currentYear = current.getUTCFullYear();
   const currentMonth = current.getUTCMonth();

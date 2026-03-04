@@ -38,6 +38,9 @@ importers:
       preact-markdown:
         specifier: ^2.1.0
         version: 2.1.0(preact@10.28.4)
+      preact-router:
+        specifier: ^4.1.2
+        version: 4.1.2(preact@10.28.4)
       react-simple-maps:
         specifier: ^2.3.0
         version: 2.3.0(prop-types@15.8.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -1052,6 +1055,11 @@ packages:
 
   preact-markup@2.1.1:
     resolution: {integrity: sha512-8JL2p36mzK8XkspOyhBxUSPjYwMxDM0L5BWBZWxsZMVW8WsGQrYQDgVuDKkRspt2hwrle+Cxr/053hpc9BJwfw==}
+    peerDependencies:
+      preact: '>=10'
+
+  preact-router@4.1.2:
+    resolution: {integrity: sha512-uICUaUFYh+XQ+6vZtQn1q+X6rSqwq+zorWOCLWPF5FAsQh3EJ+RsDQ9Ee+fjk545YWQHfUxhrBAaemfxEnMOUg==}
     peerDependencies:
       preact: '>=10'
 
@@ -2169,6 +2177,10 @@ snapshots:
       - preact
 
   preact-markup@2.1.1(preact@10.28.4):
+    dependencies:
+      preact: 10.28.4
+
+  preact-router@4.1.2(preact@10.28.4):
     dependencies:
       preact: 10.28.4
 

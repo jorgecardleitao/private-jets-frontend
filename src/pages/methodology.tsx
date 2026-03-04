@@ -3,7 +3,7 @@ import Markdown from 'preact-markdown';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'preact/hooks';
 
-export default function Home() {
+export default function Home({ path }: { path?: string } = {}) {
     const [methodology, setMethodology] = useState<string>("");
     useEffect(() => {
         fetch("https://raw.githubusercontent.com/jorgecardleitao/private-jets/main/methodology.md").then(v => v.text()).then(setMethodology)

@@ -64,7 +64,7 @@ const xAxis = {
     "day": {},
 }
 
-export default function Aggregates() {
+export default function Aggregates({ path }: { path?: string } = {}) {
     const [country, setCountry] = useState<string>("World");
     const [is_table, setIsTable] = useState<boolean>(false);
     const [quantity, setQuantity] = useState<Quantity>("co2_emitted");

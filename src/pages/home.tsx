@@ -15,7 +15,7 @@ This website quantifies private aviation worldwide. Here you can find:
 * Market share of private aircraft country of registration by number of aircrafts, number of legs, distance flown, etc.
 `
 
-export default function Home() {
+export default function Home({ path }: { path?: string } = {}) {
     return <Box>
         <Typography component="div">
             <Markdown markdown={text} />
