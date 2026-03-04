@@ -1,4 +1,4 @@
-import useTheme from "@mui/material/styles/useTheme"
+import { useTheme } from "@mui/material/styles"
 import { format } from "../pages/aggregates"
 
 const Iterator =

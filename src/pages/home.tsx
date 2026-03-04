@@ -90,7 +90,7 @@ export default function Home({ path }: { path?: string } = {}) {
             <Paper variant="outlined" sx={{ mb: 6 }}>
                 <Grid container>
                     {stats.map((s, i) => (
-                        <Grid item xs={6} md={3} key={i}>
+                        <Grid size={{ xs: 6, md: 3 }} key={i}>
                             <Box sx={{
                                 textAlign: 'center', py: 3, px: 2,
                                 borderRight: i < stats.length - 1 ? '1px solid' : 'none',
@@ -119,7 +119,7 @@ export default function Home({ path }: { path?: string } = {}) {
             </Typography>
             <Grid container spacing={3} sx={{ mb: 6 }}>
                 {features.map((f) => (
-                    <Grid item xs={12} sm={6} md={4} key={f.href}>
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={f.href}>
                         <Card elevation={2} sx={{ height: '100%' }}>
                             <CardActionArea sx={{ height: '100%' }} onClick={() => route(f.href)}>
                                 <CardContent>

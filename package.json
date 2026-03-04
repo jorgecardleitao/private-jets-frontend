@@ -7,22 +7,22 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@emotion/react": "^11.13.0",
-		"@emotion/styled": "^11.13.0",
-		"@mui/icons-material": "^5.16.7",
-		"@mui/material": "^5.16.7",
+		"@emotion/react": "^11.14.0",
+		"@emotion/styled": "^11.14.1",
+		"@mui/icons-material": "^7.3.8",
+		"@mui/material": "^7.3.8",
 		"@mui/utils": "^7.3.8",
 		"@mui/x-charts": "^7.12.1",
-		"@tanstack/react-table": "^8.20.1",
+		"@tanstack/react-table": "^8.21.3",
 		"d3-scale": "^4.0.2",
-		"preact": "^10.23.2",
+		"preact": "^10.28.4",
 		"preact-markdown": "^2.1.0",
 		"preact-router": "^4.1.2",
-		"react-simple-maps": "^2.3.0"
+		"react-simple-maps": "^3.0.0"
 	},
 	"devDependencies": {
-		"@preact/preset-vite": "^2.9.0",
-		"typescript": "^5.5.4",
-		"vite": "^5.4.1"
+		"@preact/preset-vite": "^2.10.3",
+		"typescript": "^5.9.3",
+		"vite": "^7.3.1"
 	}
 }

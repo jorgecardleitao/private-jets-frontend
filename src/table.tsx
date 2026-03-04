@@ -55,7 +55,7 @@ function ModelTable<Model>(data: Model[], columns: ColumnDef<Model, any>[]) {
     const sortFragment = (header: Header<Model, unknown>) => {
         const isSorted = header.column.getIsSorted();
         return <Grid container>
-            <Grid item style={{ display: "flex" }}>
+            <Grid style={{ display: "flex" }}>
                 <TableSortLabel
 
                     active={isSorted !== false}
@@ -72,7 +72,7 @@ function ModelTable<Model>(data: Model[], columns: ColumnDef<Model, any>[]) {
 
                 </TableSortLabel>
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={6}>
                 {
                     header.column.getCanFilter() ? (
                         <Filter column={header.column} table={table} />
