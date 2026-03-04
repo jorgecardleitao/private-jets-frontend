@@ -3,7 +3,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { createColumnHelper } from '@tanstack/react-table';
 import Typography from '@mui/material/Typography';
 
-import { Aircraft, fetchAircrafts, fetchAircraftMonths, interpolateMonth } from '../data/aircraft';
+import { Aircraft, fetchAircrafts, interpolateMonth } from '../data/aircraft';
 import ModelTable from '../table';
 import SliderSelect from '../common/sliderSelect';
 
@@ -36,19 +36,14 @@ const to_month = (a: number): string => {
     return `${2019 + year}-${String(1 + month).padStart(2, "0")}`
 }
 
-export default function AircraftsPage({ path }: { path?: string }) {
+export default function AircraftsPage({ path, availableMonths }: { path?: string, availableMonths: string[] }) {
     const current = new Date();
     const currentYear = current.getUTCFullYear();
     const currentMonth = current.getUTCMonth();
     const months = new Map([...Array((currentYear - 2019) * 12 + currentMonth).keys()].map(v => [v, to_month(v)]));
 
     const [monthIndex, setMonthIndex] = useState<number>(months.size - 1);
-    const [availableMonths, setAvailableMonths] = useState<string[]>([]);
     const [aircrafts, setAircrafts] = useState<Aircraft[]>([]);
-
-    useEffect(() => {
-        fetchAircraftMonths().then(setAvailableMonths);
-    }, []);
 
     useEffect(() => {
         if (availableMonths.length === 0) return;

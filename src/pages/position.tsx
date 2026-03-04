@@ -13,7 +13,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
 import { fetchPositions, Position } from "../data/position";
-import { Aircraft } from "../data/aircraft";
+import { Aircraft, fetchAircrafts, interpolateMonth } from "../data/aircraft";
 import SliderSelect from "../common/sliderSelect";
 import MapWithScale from "../common/mapWithScale";
 import Typography from "@mui/material/Typography/Typography";
@@ -54,19 +54,45 @@ const to_month = (a: number): string => {
   return `${2019 + year}-${String(1 + month).padStart(2, "0")}`
 }
 
-const PositionChart = ({ aircrafts, path }: { aircrafts: Aircraft[], path?: string }) => {
+const PositionChart = ({ path, availableMonths }: { path?: string, availableMonths: string[] }) => {
   const current = new Date();
   const currentYear = current.getUTCFullYear();
   const currentMonth = current.getUTCMonth();
   const months = new Map([...Array((currentYear - 2019) * 12 + currentMonth).keys()].map(v => [v, to_month(v)]));
 
-  const [month, setMonth] = useState<number>(months[-1]);
-  const [aircraft, setAircraft] = useState<Aircraft>(aircrafts.find(v => v.icao_number == "a6382d"));
+  const [monthIndex, setMonthIndex] = useState<number>(months.size - 1);
+  const [aircrafts, setAircrafts] = useState<Aircraft[]>([]);
+  const [aircraftsLoading, setAircraftsLoading] = useState(false);
+  const [aircraft, setAircraft] = useState<Aircraft | undefined>(undefined);
   const [positions, setPositions] = useState<Position[]>([]);
 
+  const fetchAircraftsForMonth = () => {
+    if (availableMonths.length === 0) return;
+    const target = months.get(monthIndex)!;
+    setAircraftsLoading(true);
+    fetchAircrafts(interpolateMonth(target, availableMonths)).then(newAircrafts => {
+      setAircrafts(newAircrafts);
+      setAircraft(prev => {
+        const next =
+          newAircrafts.find(a => a.icao_number === prev?.icao_number)
+          ?? newAircrafts.find(a => a.icao_number === "a6382d")
+          ?? newAircrafts[0];
+        // Preserve the same reference when the aircraft hasn't changed so that
+        // the positions useEffect is not re-triggered spuriously.
+        return prev?.icao_number === next?.icao_number ? prev : next;
+      });
+      setAircraftsLoading(false);
+    });
+  };
+
   useEffect(() => {
-    fetchPositions(aircraft.icao_number, months.get(month)).then(setPositions)
-  }, [aircraft, month])
+    if (!aircraft) return;
+    let cancelled = false;
+    fetchPositions(aircraft.icao_number, months.get(monthIndex)).then(positions => {
+      if (!cancelled) setPositions(positions);
+    });
+    return () => { cancelled = true; };
+  }, [aircraft, monthIndex])
 
   const colorScale = scaleLinear()
     .domain(colors.keys())
@@ -77,8 +103,8 @@ const PositionChart = ({ aircrafts, path }: { aircrafts: Aircraft[], path?: stri
     <Typography align="center" variant="h5">
       Flights of a specific private aircraft at a given month and corresponding altitude (feet)
     </Typography>
-    <AicraftSelector values={aircrafts} value={aircraft} onChange={setAircraft} label="Aircraft" />
-    <SliderSelect values={months} value={month} onChange={setMonth} label="Month" marksEvery={6} />
+    <AicraftSelector values={aircrafts} value={aircraft} onChange={setAircraft} onOpen={fetchAircraftsForMonth} loading={aircraftsLoading} label="Aircraft" />
+    <SliderSelect values={months} value={monthIndex} onChange={setMonthIndex} label="Month" marksEvery={6} />
     <MapWithScale height={385} colors={colors}>
       <ZoomableGroup>
         <Geographies geography={geoUrl} projectionConfig={{ scale: 1 }}>
@@ -112,14 +138,18 @@ interface AicraftSelectorProps {
   values: Aircraft[]
   value: Aircraft
   onChange: (arg0: Aircraft) => void
+  onOpen: () => void
+  loading: boolean
   label: string
 }
 
-function AicraftSelector({ values, value, onChange, label }: AicraftSelectorProps) {
+function AicraftSelector({ values, value, onChange, onOpen, loading, label }: AicraftSelectorProps) {
   return <Autocomplete
     disablePortal
     value={value}
     onChange={(_, v) => onChange(v)}
+    onOpen={onOpen}
+    loading={loading}
     options={values}
     sx={{ width: 300 }}
     getOptionLabel={a => a.tail_number}

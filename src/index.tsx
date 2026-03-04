@@ -23,7 +23,7 @@ import Home from './pages/home'
 import Methodology from './pages/methodology'
 import ModelTable from './table';
 import { AircraftModel, fetchAircraftModels } from './data/model'
-import { Aircraft, fetchAircrafts } from './data/aircraft'
+import { fetchAircraftMonths } from './data/aircraft'
 import AircraftsPage from './pages/aircrafts'
 import Aggregates from './pages/aggregates';
 import Compare from './pages/compare';
@@ -214,23 +214,23 @@ function ModelsPage({ models, path }: { models: AircraftModel[], path?: string }
 
 export function Main({ onRouteChange }: { onRouteChange?: (url: string) => void }) {
 	const [models, setModels] = useState<AircraftModel[]>([]);
-	const [aircrafts, setAircrafts] = useState<Aircraft[]>([]);
+	const [availableAircraftMonths, setAvailableAircraftMonths] = useState<string[]>([]);
 
 	useEffect(() => {
 		fetchAircraftModels().then(setModels)
 	}, [])
 	useEffect(() => {
-		fetchAircrafts("2024-07").then(setAircrafts)
+		fetchAircraftMonths().then(setAvailableAircraftMonths)
 	}, [])
 
 	return (
 		<Router onChange={(e) => onRouteChange?.(e.url)}>
 			<Home path="/" />
 			<ModelsPage path="/models" models={models} />
-			<AircraftsPage path="/aircrafts" />
+			<AircraftsPage path="/aircrafts" availableMonths={availableAircraftMonths} />
 			<Aggregates path="/timeseries" />
 			<Compare path="/compare" />
-			<Positions path="/positions" aircrafts={aircrafts} />
+			<Positions path="/positions" availableMonths={availableAircraftMonths} />
 			<Methodology path="/methodology" />
 		</Router>
 	);
