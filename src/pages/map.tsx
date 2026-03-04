@@ -62,7 +62,7 @@ const MapChart = () => {
 
   const [target, setTarget] = useState<[string, CountryAggregate]>(null);
 
-  const [year, setYear] = useState<number>(2023);
+  const [year, setYear] = useState<number>(2025);
 
   useEffect(() => {
     fetchAggregates("country", "year").then(setAggregates)
