@@ -16,7 +16,7 @@ export default function Selector({ values, value, onChange, label }: SelectorPro
             value={value}
             onChange={(_, v) => onChange(v)}
             options={Object.keys(values)}
-            sx={{ width: 300 }}
+            sx={{ width: 180 }}
             getOptionLabel={v => values[v]}
             renderInput={(params) => <TextField {...params} label={label} />}
         />

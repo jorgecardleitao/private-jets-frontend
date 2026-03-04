@@ -1,9 +1,16 @@
 import { ChartsAxisHighlight, ChartsGrid, ChartsTextStyle, ChartsTooltip, ChartsXAxis, ChartsYAxis, LineHighlightPlot, LinePlot, ResponsiveChartContainer, axisClasses } from '@mui/x-charts';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { createColumnHelper } from '@tanstack/react-table';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
+
+import TimelineIcon from '@mui/icons-material/Timeline';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
 
 import { useEffect, useState } from 'preact/hooks';
 
@@ -26,21 +33,15 @@ const units = [
 function kilomega(amount: number) {
     const exp = amount === 0 ? 0 : Math.floor(Math.log(amount) / Math.log(1000));
     const factor = Math.pow(1000, exp);
-
-    return {
-        amount: amount / factor,
-        symbol: units[exp]["symbol"],
-    }
+    return { amount: amount / factor, symbol: units[exp]["symbol"] };
 }
 
 export function format(value: number, decimal: number = 1): string {
     const scaled = kilomega(value);
-    return `${scaled.amount.toFixed(decimal)} ${scaled.symbol}`
+    return `${scaled.amount.toFixed(decimal)} ${scaled.symbol}`;
 }
 
-interface Quantities {
-    [name: string]: string
-}
+interface Quantities { [name: string]: string }
 
 const scales: Quantities = {
     "year": "Years",
@@ -55,14 +56,11 @@ const formatValue = {
 }
 
 const xAxis = {
-    "year": {
-        valueFormatter: (value, _) => value.slice(0, -6)
-    },
-    "month": {
-        valueFormatter: (value, _) => value.slice(0, -3)
-    },
+    "year": { valueFormatter: (value, _) => value.slice(0, -6) },
+    "month": { valueFormatter: (value, _) => value.slice(0, -3) },
     "day": {},
 }
+
 
 export default function Aggregates({ path }: { path?: string } = {}) {
     const [country, setCountry] = useState<string>("World");
@@ -75,16 +73,55 @@ export default function Aggregates({ path }: { path?: string } = {}) {
         fetchAggregates("country", scale).then(setAggregates)
     }, [scale])
 
-    const countries = Object.fromEntries(aggregates.length > 0 ? aggregates.map(v => [v.country, v.country]) : [["World", "World"]])
-    const dataset = aggregates.filter(v => v.country == country)
+    const countries = Object.fromEntries(aggregates.length > 0 ? aggregates.map(v => [v.country, v.country]) : [["World", "World"]]);
+    const dataset = aggregates.filter(v => v.country == country);
 
-    return <Box>
-        <FormControlLabel control={<Switch onChange={(_, value) => setIsTable(value)} />} label="Table" />
-        {!is_table ? <Selector values={quantities} value={quantity} onChange={setQuantity} label="Quantity" /> : null}
-        <Selector values={countries} value={country} onChange={setCountry} label="Country of registration" />
-        <Selector values={scales} value={scale} onChange={setScale} label="Time scale" />
-        {is_table ? <AggregateTable aggregates={dataset} scale={scale} quantity={quantity} /> : <Chart aggregates={dataset} scale={scale} quantity={quantity} />}
-    </Box>
+    return (
+        <Container maxWidth="lg">
+            {/* Header */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2, mb: 3 }}>
+                <TimelineIcon sx={{ fontSize: 36, color: 'primary.main' }} />
+                <Box>
+                    <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', lineHeight: 1.2 }}>
+                        Private aviation over time
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        Cumulative totals for the selected country and time scale
+                    </Typography>
+                </Box>
+            </Box>
+
+            {/* Controls */}
+            <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                        <Selector values={countries} value={country} onChange={setCountry} label="Country" />
+                        <Selector values={scales} value={scale} onChange={setScale} label="Time scale" />
+                        {!is_table && (
+                            <Selector values={quantities} value={quantity} onChange={setQuantity} label="Quantity" />
+                        )}
+                    </Box>
+                    <ToggleButtonGroup
+                        size="small"
+                        value={is_table ? 'table' : 'chart'}
+                        exclusive
+                        onChange={(_, v) => { if (v !== null) setIsTable(v === 'table'); }}
+                    >
+                        <ToggleButton value="chart"><ShowChartIcon sx={{ mr: 0.5 }} />Chart</ToggleButton>
+                        <ToggleButton value="table"><TableChartIcon sx={{ mr: 0.5 }} />Table</ToggleButton>
+                    </ToggleButtonGroup>
+                </Box>
+            </Paper>
+
+            {/* Content */}
+            <Paper variant="outlined" sx={{ p: 2 }}>
+                {is_table
+                    ? <AggregateTable aggregates={dataset} scale={scale} quantity={quantity} />
+                    : <Chart aggregates={dataset} scale={scale} quantity={quantity} />
+                }
+            </Paper>
+        </Container>
+    );
 }
 
 interface ChartsProps {
