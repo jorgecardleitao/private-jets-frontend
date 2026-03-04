@@ -86,7 +86,7 @@ export default function Aggregates({ path }: { path?: string } = {}) {
                         Private aviation over time
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Cumulative totals for the selected country and time scale
+                        Evolution of private aviation metrics by country and time scale
                     </Typography>
                 </Box>
             </Box>

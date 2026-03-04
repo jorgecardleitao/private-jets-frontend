@@ -179,7 +179,7 @@ function AicraftSelector({ values, value, onChange, onOpen, loading, label }: Ai
     onOpen={onOpen}
     loading={loading}
     options={values}
-    sx={{ width: 300 }}
+    sx={{ minWidth: 160, flex: 1 }}
     getOptionLabel={a => a.tail_number}
     renderInput={(params) => <TextField {...(params as any)} label={label} />}
   />

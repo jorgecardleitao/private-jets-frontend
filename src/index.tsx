@@ -92,7 +92,7 @@ export default function App() {
 	const drawer = (
 		<Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
 			<Typography variant="h6" sx={{ my: 2 }}>
-				Private aircrafts
+				Private Aviation
 			</Typography>
 			<Divider />
 			<List>
@@ -131,7 +131,7 @@ export default function App() {
 							component="div"
 							sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
 						>
-							Private aircrafts
+							Private Aviation
 						</Typography>
 						<Box sx={{ display: { xs: 'none', sm: 'block' } }}>
 							{(Object.entries(NAMES) as [Tab, string][]).map(([page, title]) => (

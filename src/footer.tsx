@@ -15,7 +15,7 @@ export const Footer = () => {
             <Grid container direction="column" alignItems="center">
                 <Grid item xs={12}>
                     <Typography color="textSecondary" variant="subtitle1">
-                        © 2024 Jorge Leitão (<a href="https://www.linkedin.com/in/jorgecarleitao/">Linkedin</a>)
+                        © 2026 Jorge Leitão (<a href="https://www.linkedin.com/in/jorgecarleitao/">Linkedin</a>)
                     </Typography>
                 </Grid>
                 <Grid item xs={12}>

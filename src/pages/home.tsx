@@ -74,7 +74,7 @@ export default function Home({ path }: { path?: string } = {}) {
                     Private Aviation Worldwide
                 </Typography>
                 <Typography variant="h6" color="text.secondary" sx={{ mb: 4, maxWidth: 640, mx: 'auto' }}>
-                    An open dataset tracking every private jet flight on the planet — models, owners, routes, and emissions.
+                    An open dataset tracking every private jet flight on the planet — models, registrations, routes, and emissions.
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
                     <Button variant="contained" size="large" onClick={() => route('/timeseries')}>
