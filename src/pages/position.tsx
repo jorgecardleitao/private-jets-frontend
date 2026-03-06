@@ -23,6 +23,7 @@ import { fetchPositions, Position } from "../data/position";
 import { Aircraft, fetchAircrafts, interpolateMonth } from "../data/aircraft";
 import SliderSelect from "../common/sliderSelect";
 import MapWithScale from "../common/mapWithScale";
+import SEO from "../common/seo";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
 
@@ -105,6 +106,11 @@ const PositionChart = ({ path, availableMonths }: { path?: string, availableMont
 
   return (
     <Container maxWidth="lg">
+      <SEO
+        title="Geopositions"
+        description="Track where private jets are flying — aircraft positions and flight paths rendered on an interactive world map."
+        path="/positions"
+      />
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2, mb: 3 }}>
         <PublicIcon sx={{ fontSize: 36, color: 'error.main' }} />

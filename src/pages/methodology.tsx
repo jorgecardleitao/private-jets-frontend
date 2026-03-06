@@ -9,6 +9,7 @@ import { useEffect, useState } from 'preact/hooks';
 
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import SEO from '../common/seo';
 
 export default function Methodology({ path }: { path?: string } = {}) {
     const [methodology, setMethodology] = useState<string>("");
@@ -20,6 +21,11 @@ export default function Methodology({ path }: { path?: string } = {}) {
 
     return (
         <Container maxWidth="lg">
+            <SEO
+                title="Methodology"
+                description="How private aviation data is collected, processed, and validated from ADS-B transponder signals."
+                path="/methodology"
+            />
             {/* Header */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2, mb: 3 }}>
                 <MenuBookIcon sx={{ fontSize: 36, color: 'info.main' }} />

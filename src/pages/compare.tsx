@@ -19,6 +19,7 @@ import TableChartIcon from '@mui/icons-material/TableChart';
 import { ModelAggregate, CountryAggregate, fetchAggregates, quantities, Dimension } from '../data/timeseries';
 import ModelTable from '../table';
 import Selector from '../common/selector';
+import SEO from '../common/seo';
 import SliderSelect from "../common/sliderSelect";
 import { format } from './aggregates';
 
@@ -42,6 +43,11 @@ export default function Compare({ path }: { path?: string } = {}) {
 
     return (
         <Container maxWidth="lg">
+            <SEO
+                title="By country & model"
+                description="Compare private aviation metrics — flights, distance, and CO₂ — across countries and aircraft models."
+                path="/compare"
+            />
             {/* Header */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2, mb: 3 }}>
                 <CompareArrowsIcon sx={{ fontSize: 36, color: 'warning.main' }} />

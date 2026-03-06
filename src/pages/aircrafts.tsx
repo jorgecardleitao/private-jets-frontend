@@ -15,6 +15,7 @@ import RadarIcon from '@mui/icons-material/Radar';
 import { Aircraft, fetchAircrafts, interpolateMonth } from '../data/aircraft';
 import ModelTable from '../table';
 import SliderSelect from '../common/sliderSelect';
+import SEO from '../common/seo';
 
 const columnHelper = createColumnHelper<Aircraft>();
 
@@ -95,6 +96,11 @@ export default function AircraftsPage({ path, availableMonths }: { path?: string
 
     return (
         <Container maxWidth="lg">
+            <SEO
+                title="Individual aircrafts"
+                description="Browse 25,000+ registered private aircraft by tail number, model, and country of registration."
+                path="/aircrafts"
+            />
             {/* Header */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2, mb: 1 }}>
                 <AirplaneTicketIcon sx={{ fontSize: 36, color: 'secondary.main' }} />

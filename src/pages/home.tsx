@@ -17,6 +17,7 @@ import AirplaneTicketIcon from '@mui/icons-material/AirplaneTicket';
 import { route } from 'preact-router';
 
 import WorldMap from "./map";
+import SEO from '../common/seo';
 
 const stats = [
     { value: "70+", label: "Aircraft models" },
@@ -67,6 +68,7 @@ const features = [
 export default function Home({ path }: { path?: string } = {}) {
     return (
         <Container maxWidth="lg">
+            <SEO path="/" />
             {/* Hero */}
             <Box sx={{ textAlign: 'center', my: 6 }}>
                 <FlightIcon sx={{ fontSize: 56, color: 'primary.main', mb: 1 }} />

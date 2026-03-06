@@ -1,6 +1,7 @@
 import { render } from 'preact';
 import { lazy, Suspense } from 'preact/compat';
 import { useEffect, useMemo, useState } from 'preact/hooks';
+import { HelmetProvider } from 'react-helmet-async';
 import Router, { route, getCurrentUrl } from 'preact-router';
 
 import { createTheme } from '@mui/material/styles';
@@ -114,71 +115,73 @@ export default function App() {
 	);
 
 	return (
-		<ThemeProvider theme={theme}>
-			<CssBaseline enableColorScheme />
-			<Box>
-				<AppBar component="nav">
-					<Toolbar>
-						<IconButton
-							color="inherit"
-							aria-label="open drawer"
-							edge="start"
-							onClick={handleDrawerToggle}
-							sx={{ mr: 2, display: { sm: 'none' } }}
+		<HelmetProvider>
+			<ThemeProvider theme={theme}>
+				<CssBaseline enableColorScheme />
+				<Box>
+					<AppBar component="nav">
+						<Toolbar>
+							<IconButton
+								color="inherit"
+								aria-label="open drawer"
+								edge="start"
+								onClick={handleDrawerToggle}
+								sx={{ mr: 2, display: { sm: 'none' } }}
+							>
+								<MenuIcon />
+							</IconButton>
+							<Typography
+								variant="h6"
+								component="div"
+								sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+							>
+								Private Aviation
+							</Typography>
+							<Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+								{(Object.entries(NAMES) as [Tab, string][]).map(([page, title]) => (
+									<Tooltip title={DESCRIPTIONS[page]}>
+										<Button
+											sx={{ ml: 1, fontWeight: currentUrl === ROUTES[page] ? 'bold' : 'normal' }}
+											key={page}
+											href={ROUTES[page]}
+											onClick={(e) => { e.preventDefault(); route(ROUTES[page]); }}
+											color="inherit"
+											variant={currentUrl === ROUTES[page] ? 'outlined' : 'text'}
+										>
+											{title}
+										</Button>
+									</Tooltip>
+								))}
+							</Box>
+							<IconButton sx={{ ml: 1 }} onClick={() => setMode(theme.palette.mode == 'dark' ? 'light' : 'dark')} color="inherit">
+								{theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+							</IconButton>
+						</Toolbar>
+					</AppBar>
+					<nav>
+						<Drawer
+							variant="temporary"
+							open={mobileOpen}
+							onClose={handleDrawerToggle}
+							ModalProps={{
+								keepMounted: true, // Better open performance on mobile.
+							}}
+							sx={{
+								display: { xs: 'block', sm: 'none' },
+								'& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+							}}
 						>
-							<MenuIcon />
-						</IconButton>
-						<Typography
-							variant="h6"
-							component="div"
-							sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
-						>
-							Private Aviation
-						</Typography>
-						<Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-							{(Object.entries(NAMES) as [Tab, string][]).map(([page, title]) => (
-								<Tooltip title={DESCRIPTIONS[page]}>
-									<Button
-										sx={{ ml: 1, fontWeight: currentUrl === ROUTES[page] ? 'bold' : 'normal' }}
-										key={page}
-										href={ROUTES[page]}
-										onClick={(e) => { e.preventDefault(); route(ROUTES[page]); }}
-										color="inherit"
-										variant={currentUrl === ROUTES[page] ? 'outlined' : 'text'}
-									>
-										{title}
-									</Button>
-								</Tooltip>
-							))}
-						</Box>
-						<IconButton sx={{ ml: 1 }} onClick={() => setMode(theme.palette.mode == 'dark' ? 'light' : 'dark')} color="inherit">
-							{theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-						</IconButton>
-					</Toolbar>
-				</AppBar>
-				<nav>
-					<Drawer
-						variant="temporary"
-						open={mobileOpen}
-						onClose={handleDrawerToggle}
-						ModalProps={{
-							keepMounted: true, // Better open performance on mobile.
-						}}
-						sx={{
-							display: { xs: 'block', sm: 'none' },
-							'& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-						}}
-					>
-						{drawer}
-					</Drawer>
-				</nav>
-				<Box component="main" sx={{ p: 3 }}>
-					<Toolbar />
-					<Main onRouteChange={setCurrentUrl} />
+							{drawer}
+						</Drawer>
+					</nav>
+					<Box component="main" sx={{ p: 3 }}>
+						<Toolbar />
+						<Main onRouteChange={setCurrentUrl} />
+					</Box>
+					<Footer />
 				</Box>
-				<Footer />
-			</Box>
-		</ThemeProvider>
+			</ThemeProvider>
+		</HelmetProvider>
 	);
 }
 

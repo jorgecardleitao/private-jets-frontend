@@ -18,6 +18,7 @@
 		"preact": "^10.28.4",
 		"preact-markdown": "^2.1.0",
 		"preact-router": "^4.1.2",
+		"react-helmet-async": "^3.0.0",
 		"react-simple-maps": "^3.0.0"
 	},
 	"devDependencies": {

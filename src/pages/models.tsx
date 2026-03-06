@@ -15,6 +15,7 @@ import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
 
 import ModelTable from '../table';
 import { AircraftModel } from '../data/model';
+import SEO from '../common/seo';
 
 /** Map a gph value to a CSS color interpolated from green → amber → red */
 function gphColor(gph: number, min: number, max: number): string {
@@ -115,6 +116,11 @@ export default function ModelsPage({ models, path }: { models: AircraftModel[]; 
 
     return (
         <Container maxWidth="lg">
+            <SEO
+                title="Aircraft models"
+                description="Explore over 70 private jet and turboprop models tracked in the open dataset, including fuel consumption and market share."
+                path="/models"
+            />
             {/* Header */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2, mb: 1 }}>
                 <FlightIcon sx={{ fontSize: 36, color: 'primary.main' }} />

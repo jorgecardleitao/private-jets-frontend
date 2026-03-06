@@ -17,6 +17,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { CountryAggregate, fetchAggregates, Scale, quantities, Quantity } from '../data/timeseries';
 import ModelTable from '../table';
 import Selector from '../common/selector';
+import SEO from '../common/seo';
 
 const units = [
     { prefix: "", symbol: "", iecPrefix: "", iecSymbol: "" },
@@ -78,6 +79,11 @@ export default function Aggregates({ path }: { path?: string } = {}) {
 
     return (
         <Container maxWidth="lg">
+            <SEO
+                title="Private aviation over time"
+                description="Explore how private aviation has evolved since 2019 — legs flown, hours airborne, distances covered, and CO₂ emitted."
+                path="/timeseries"
+            />
             {/* Header */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2, mb: 3 }}>
                 <TimelineIcon sx={{ fontSize: 36, color: 'primary.main' }} />
