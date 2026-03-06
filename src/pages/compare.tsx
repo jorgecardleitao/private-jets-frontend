@@ -38,7 +38,7 @@ export default function Compare({ path }: { path?: string } = {}) {
 
     const years = new Map([...new Set(aggregates.map(a => Number(a.date.slice(0, 4))))].map(a => [a, a.toString()]))
 
-    let dataset = aggregates.filter(v => Number(v.date.slice(0, 4)) == year).filter(v => v[dimension] != "World");
+    let dataset = (aggregates as (ModelAggregate | CountryAggregate)[]).filter(v => Number(v.date.slice(0, 4)) == year).filter(v => v[dimension] != "World") as ModelAggregate[] | CountryAggregate[];
     dataset.sort((v1, v2) => -(v1[quantity] - v2[quantity]));
 
     return (
@@ -109,7 +109,7 @@ function AggregateTable(props: ChartsProps) {
             header: () => dimensions[props.dimension],
             cell: info => info.getValue(),
         }),
-        ...Object.entries(quantities).map(([key, name]) => columnHelper.accessor(key, {
+        ...Object.entries(quantities).map(([key, name]) => columnHelper.accessor(key as any, {
             header: () => name,
             cell: info => format(info.getValue() as number),
         }))
@@ -123,10 +123,10 @@ function Chart(props: ChartsProps) {
     return <ResponsiveChartContainer
         margin={{ top: 100, right: 30, bottom: 50, left: 210 }}
         height={2000}
-        dataset={props.dataset}
+        dataset={props.dataset as any[]}
         yAxis={[{ id: 'axis-id', scaleType: 'band', dataKey: props.dimension, tickLabelStyle: theme.typography.body2 as ChartsTextStyle, }]}
-        xAxis={[{ valueFormatter: format, label: quantities[props.quantity], tickLabelStyle: theme.typography.body2 as ChartsTextStyle }]}
-        series={[{ layout: "horizontal", type: 'bar', dataKey: props.quantity, color: theme.palette.primary.main, valueFormatter: format }]}
+        xAxis={[{ valueFormatter: (value: number) => format(value), label: quantities[props.quantity], tickLabelStyle: theme.typography.body2 as ChartsTextStyle }]}
+        series={[{ layout: "horizontal", type: 'bar', dataKey: props.quantity, color: theme.palette.primary.main, valueFormatter: (value: number) => format(value) }]}
     >
         <BarPlot />
         <ChartsYAxis axisId="axis-id" />

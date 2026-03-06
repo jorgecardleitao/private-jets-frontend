@@ -52,6 +52,7 @@ export default function Methodology({ path }: { path?: string } = {}) {
             {/* Content */}
             <Paper variant="outlined" sx={{ p: 4, '& img': { maxWidth: '100%', height: 'auto' } }}>
                 <Typography component="div">
+                    {/* @ts-ignore - preact-markdown typedefs are incorrect; markdown prop is correct */}
                     <Markdown markdown={markdown} />
                 </Typography>
             </Paper>

@@ -157,7 +157,7 @@ function Chart(props: ChartsProps) {
     return <ResponsiveChartContainer
         margin={{ top: 20, right: 20, bottom: 50, left: 100 }}
         height={300}
-        dataset={props.aggregates}
+        dataset={props.aggregates as any[]}
         xAxis={[
             {
                 scaleType: 'point',
@@ -173,7 +173,7 @@ function Chart(props: ChartsProps) {
                 min: 0,
                 label: quantities[props.quantity],
                 tickLabelStyle: theme.typography.body2 as ChartsTextStyle,
-                valueFormatter: format,
+                valueFormatter: (value: number) => format(value),
             },
         ]}
         series={[
