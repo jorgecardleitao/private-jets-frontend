@@ -1,4 +1,5 @@
 import { render } from 'preact';
+import { lazy, Suspense } from 'preact/compat';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import Router, { route, getCurrentUrl } from 'preact-router';
 
@@ -15,15 +16,16 @@ import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import Home from './pages/home'
-import ModelsPage from './pages/models'
-import Methodology from './pages/methodology'
+const Home = lazy(() => import('./pages/home'));
+const ModelsPage = lazy(() => import('./pages/models'));
+const Methodology = lazy(() => import('./pages/methodology'));
+const AircraftsPage = lazy(() => import('./pages/aircrafts'));
+const Aggregates = lazy(() => import('./pages/aggregates'));
+const Compare = lazy(() => import('./pages/compare'));
+const Positions = lazy(() => import('./pages/position'));
+
 import { AircraftModel, fetchAircraftModels } from './data/model'
 import { fetchAircraftMonths } from './data/aircraft'
-import AircraftsPage from './pages/aircrafts'
-import Aggregates from './pages/aggregates';
-import Compare from './pages/compare';
-import Positions from './pages/position';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Divider from '@mui/material/Divider';
@@ -194,15 +196,17 @@ export function Main({ onRouteChange }: { onRouteChange?: (url: string) => void 
 	}, [])
 
 	return (
-		<Router onChange={(e) => onRouteChange?.(e.url)}>
-			<Home path="/" />
-			<ModelsPage path="/models" models={models} />
-			<AircraftsPage path="/aircrafts" availableMonths={availableAircraftMonths} />
-			<Aggregates path="/timeseries" />
-			<Compare path="/compare" />
-			<Positions path="/positions" availableMonths={availableAircraftMonths} />
-			<Methodology path="/methodology" />
-		</Router>
+		<Suspense fallback={<Box sx={{ p: 3 }}>Loading...</Box>}>
+			<Router onChange={(e) => onRouteChange?.(e.url)}>
+				<Home path="/" />
+				<ModelsPage path="/models" models={models} />
+				<AircraftsPage path="/aircrafts" availableMonths={availableAircraftMonths} />
+				<Aggregates path="/timeseries" />
+				<Compare path="/compare" />
+				<Positions path="/positions" availableMonths={availableAircraftMonths} />
+				<Methodology path="/methodology" />
+			</Router>
+		</Suspense>
 	);
 }
 
